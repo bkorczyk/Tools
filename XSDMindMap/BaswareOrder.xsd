@@ -1,0 +1,3343 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="DocumentElement">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Orders">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Order" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:all>                    
+										<xs:element name="OrderNumber" minOccurs="1" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">	
+													<xs:minLength value="2"/>												
+													<xs:maxLength value="100"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="OrderTypeCode" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="25"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Description" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="1000"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Invoiced" maxOccurs="1" minOccurs="0">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">										
+													<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+													<xs:maxLength value="5"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Delivered" maxOccurs="1" minOccurs="0">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">										
+													<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+													<xs:maxLength value="5"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="CurrencyCode" minOccurs="1" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">	
+													<xs:minLength value="2"/>												
+													<xs:maxLength value="3"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="ExchangeRate" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:decimal"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="InvoicingSupplierCode" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="25"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="InvoicingSupplierName" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="OrganizationElementCode" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="25"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="OrganizationElementName" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="CompanyCode" minOccurs="1" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:minLength value="2"/>
+													<xs:maxLength value="25"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="CompanyName" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="PurchaseOrganizationCode" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="25"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="PurchaseOrganizationName" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="GrossSum" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:decimal"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="NetSum" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:decimal"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="MatchingMode" minOccurs="1" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">										
+													<xs:pattern value="0|1|2|3"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="TaxSum" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:decimal"/>												
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="InvoicedNetSum" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:decimal"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="DeliveredNetSum" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:decimal"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="OwnerName" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="BuyerName" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>									
+										</xs:element>
+										<xs:element name="IssueDate" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:dateTime"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="RequestedDeliveryDate" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:date"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="ActualDeliveryDate" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:date"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="DataRetrievalStatus" maxOccurs="1" minOccurs="0">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">										
+													<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+													<xs:maxLength value="5"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>										
+										<xs:element name="Text1" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Text2" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Text3" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Text4" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Text5" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Text6" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Text7" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Text8" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Text9" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Text10" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Numeric1" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:decimal"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Numeric2" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:decimal"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Numeric3" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:decimal"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Numeric4" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:decimal"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Numeric5" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:decimal"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Date1" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:dateTime"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Date2" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:dateTime"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Date3" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:dateTime"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Date4" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:dateTime"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Date5" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:dateTime"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="ReferencePerson" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="OrderRows" minOccurs="0" maxOccurs="1">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="OrderRow" minOccurs="0" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:all>
+																<xs:element name="OrderNumber" minOccurs="1" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:minLength value="2"/>
+																			<xs:maxLength value="100"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="RowIndex" minOccurs="1" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">
+																			<xs:maxLength value="100"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Invoiced" maxOccurs="1" minOccurs="0">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">										
+																			<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+																			<xs:maxLength value="5"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Delivered" maxOccurs="1" minOccurs="0">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">										
+																			<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+																			<xs:maxLength value="5"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Quantity" minOccurs="1" maxOccurs="1" type="xs:decimal"/>											
+																<xs:element name="UnitCode" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="25"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="NetPrice" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="GrossPrice" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="NetSum" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="PriceQuantity" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="GrossSum" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="TaxSum" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="TaxCode" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="25"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="TaxPercent" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="TaxPercent2" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="InvoicedNetSum" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="InvoicedQuantity" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="DeliveredNetSum" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="DeliveredQuantity" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="GoodsReceiptRequired" maxOccurs="1" minOccurs="0">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">										
+																			<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+																			<xs:maxLength value="5"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>																
+																<xs:element name="ProductCode" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="250"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="ProductName" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="250"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Unspsc" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="25"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="RequestedDeliveryDate" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:date"/>																		
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="ActualDeliveryDate" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:date"/>																		
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Comment" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="1000"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Text1" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="250"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Text2" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="250"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Text3" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="250"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Text4" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="250"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Text5" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="250"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Text6" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="250"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Text7" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="250"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Text8" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="250"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Text9" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="250"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Text10" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="250"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Numeric1" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Numeric2" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Numeric3" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Numeric4" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Numeric5" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Date1" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:dateTime"/>																		
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Date2" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:dateTime"/>																		
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Date3" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:dateTime"/>																		
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Date4" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:dateTime"/>																		
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Date5" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:dateTime"/>																		
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Description" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">													
+																			<xs:maxLength value="1000"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="MatchingMode" minOccurs="1" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">										
+																			<xs:pattern value="0|1|2|3"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Deleted" maxOccurs="1" minOccurs="0">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">										
+																			<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+																			<xs:maxLength value="5"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="Closed" maxOccurs="1" minOccurs="0">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">										
+																			<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+																			<xs:maxLength value="5"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="ValidFrom" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:dateTime"/>																		
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="ValidTo" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:dateTime"/>																		
+																	</xs:simpleType>
+																</xs:element>																
+																<xs:element name="CodingRows" maxOccurs="1" minOccurs="0">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element maxOccurs="unbounded" minOccurs="0" name="CodingRow">
+																				<xs:complexType>
+																					<xs:all>
+																						<xs:element name="OrderNumber" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="OrderRowNumber" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="25"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>																						
+																						<xs:element name="RowIndex" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:string"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="AccountCode" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="25"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="AccountName" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="CostCenterCode" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="25"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="CostCenterName" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="ProjectCode" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="25"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="ProjectName" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="GrossSum" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="NetSum" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="TaxSum" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>																						
+																						<xs:element name="TaxCode" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="25"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="TaxPercent" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="TaxPercent2" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Quantity" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>																						
+																						<xs:element name="Text1" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text2" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text3" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text4" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text5" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text6" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text7" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text8" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text9" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text10" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text11" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text12" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text13" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text14" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text15" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text16" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text17" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text18" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text19" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text20" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text21" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text22" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text23" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text24" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text25" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text26" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text27" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text28" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text29" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text30" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text31" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text32" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text33" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text34" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text35" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text36" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text37" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text38" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text39" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text40" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text41" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text42" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text43" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text44" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text45" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text46" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text47" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text48" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text49" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text50" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text51" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text52" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text53" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text54" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text55" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text56" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text57" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text58" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text59" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text60" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text61" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text62" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text63" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text64" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text65" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text66" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text67" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text68" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text69" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text70" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text71" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text72" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text73" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text74" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text75" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text76" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text77" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text78" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text79" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text80" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text81" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text82" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text83" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text84" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text85" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="50"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric1" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric2" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric3" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric4" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric5" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric6" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric7" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric8" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric9" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric10" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric11" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric12" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric13" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric14" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric15" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric16" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric17" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric18" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric19" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric20" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Date1" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>																
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Date2" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>																	
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Date3" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>																	
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Date4" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>																	
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Date5" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>																	
+																							</xs:simpleType>
+																						</xs:element>								
+																					</xs:all>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="GoodsReceipts" minOccurs="0" maxOccurs="1">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element maxOccurs="unbounded" minOccurs="0" name="GoodsReceipt">
+																				<xs:complexType>
+																					<xs:all>
+																						<xs:element name="GoodsReceiptNumber" minOccurs="1" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:minLength value="2"/>
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="GoodsReceiptRowNumber" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="25"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="OrderNumber" minOccurs="1" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:minLength value="2"/>
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="BestFitGrouping" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">																									
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>																													
+																						<xs:element name="OrderRowNumber" minOccurs="1" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:minLength value="1"/>
+																									<xs:maxLength value="25"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Quantity" minOccurs="1" maxOccurs="1" type="xs:decimal"/>
+																						<xs:element name="NetSum" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="NetPrice" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="DeliveryDate" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:date"/>																	
+																							</xs:simpleType>
+																						</xs:element>																						
+																						<xs:element name="UserName" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text1" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text2" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text3" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text4" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text5" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric1" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric2" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric3" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric4" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric5" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Date1" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>																	
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Date2" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>																
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Date3" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>																	
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Date4" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>																	
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Date5" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>																	
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="ReceiveMethod" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:short"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Deleted" maxOccurs="1" minOccurs="0">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">										
+																									<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+																									<xs:maxLength value="5"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="DeliveryNoteNumber" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="GoodsReceiptType" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:integer"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="VoucherNumber" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="GRNote" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:whiteSpace value="collapse"/>
+																									<xs:maxLength value="250"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="ReferenceDocId" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="ReferenceDocItemId" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="25"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="FiscalYear" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>																	
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="GrossSum" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="GrossPrice" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="InvoicedNetSum" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="InvoicedQuantity" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																					</xs:all>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="CodingFactor" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="CodingStrategy" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:short"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="SelfApprove" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:short"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="GoodsReceiptsBasedInvoicing" maxOccurs="1" minOccurs="0">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">										
+																			<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+																			<xs:maxLength value="5"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="ReceiveMethod" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:short"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="GrOverReceivalQty" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="GrOverReceivalNetSum" nillable="true" minOccurs="0" maxOccurs="1">
+																	<xs:simpleType>
+																		<xs:list itemType="xs:decimal"/>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="OverReceivalAllowed" maxOccurs="1" minOccurs="1">
+																	<xs:simpleType>
+																		<xs:restriction base="xs:string">										
+																			<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+																			<xs:minLength value="1"/>
+																			<xs:maxLength value="5"/>
+																			<xs:whiteSpace value="collapse"/>
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="PlannedServices" maxOccurs="1" minOccurs="0">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element maxOccurs="unbounded" minOccurs="0" name="Service">
+																				<xs:complexType>
+																					<xs:all>
+																						<xs:element name="OrderNumber" minOccurs="1" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:minLength value="2"/>
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="OrderRowNumber" minOccurs="1" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:minLength value="1"/>
+																									<xs:maxLength value="25"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="ServiceLineNumber" minOccurs="1" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:minLength value="1"/>
+																									<xs:maxLength value="25"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="ServiceNumber" minOccurs="1" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="25"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Quantity" minOccurs="1" maxOccurs="1" type="xs:decimal"/>
+																						<xs:element name="UnitCode" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">													
+																									<xs:maxLength value="25"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="PriceUnit" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="NetValue" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Description" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">													
+																									<xs:maxLength value="1000"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="TaxCode" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">													
+																									<xs:maxLength value="25"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="NetPrice" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																					</xs:all>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="ServiceEntrySheets" maxOccurs="1" minOccurs="0">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element maxOccurs="unbounded" minOccurs="0" name="ServiceEntrySheet">
+																				<xs:complexType>
+																					<xs:all>
+																						<xs:element name="ServiceEntrySheetNumber" minOccurs="1" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:minLength value="2"/>
+																									<xs:maxLength value="15"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="ServiceEntrySheetName" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="1000"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="ServiceEntrySheetDocId" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:minLength value="2"/>
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="OrderNumber" minOccurs="1" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:minLength value="2"/>
+																									<xs:maxLength value="100"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="OrderRowNumber" minOccurs="1" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:minLength value="1"/>
+																									<xs:maxLength value="10"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Accepted" maxOccurs="1" minOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">										
+																									<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+																									<xs:maxLength value="5"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="NetValue" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="UnplannedValue" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Deleted" maxOccurs="1" minOccurs="0">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">										
+																									<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+																									<xs:maxLength value="5"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text1" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">													
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text2" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">													
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text3" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">													
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text4" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">													
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text5" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">													
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text6" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">													
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text7" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">													
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text8" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">													
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text9" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">													
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Text10" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">													
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric1" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric2" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric3" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric4" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Numeric5" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Date1" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Date2" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Date3" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Date4" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="Date5" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="DeliveryNoteNumber" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:restriction base="xs:string">
+																									<xs:maxLength value="250"/>
+																									<xs:whiteSpace value="collapse"/>
+																								</xs:restriction>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="DeliveryDate" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:dateTime"/>																		
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="InvoicedNetSum" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="InvoicedQuantity" nillable="true" minOccurs="0" maxOccurs="1">
+																							<xs:simpleType>
+																								<xs:list itemType="xs:decimal"/>
+																							</xs:simpleType>
+																						</xs:element>
+																						<xs:element name="CodingRows" maxOccurs="1" minOccurs="0">
+																							<xs:complexType>
+																								<xs:sequence>
+																									<xs:element maxOccurs="unbounded" minOccurs="0" name="CodingRow">
+																										<xs:complexType>
+																											<xs:all>
+																												<xs:element name="OrderNumber" minOccurs="1" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="ServiceEntrySheetNumber" minOccurs="1" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="OrderRowNumber" minOccurs="1" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="25"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>																						
+																												<xs:element name="RowIndex" nillable="true" minOccurs="1" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:string"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="AccountCode" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="25"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="AccountName" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="CostCenterCode" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="25"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="CostCenterName" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="ProjectCode" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="25"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="ProjectName" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GrossSum" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="NetSum" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="TaxSum" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>																						
+																												<xs:element name="TaxCode" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="25"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="TaxPercent" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="TaxPercent2" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Quantity" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>																						
+																												<xs:element name="Text1" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text2" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text3" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text4" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text5" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text6" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text7" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text8" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text9" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text10" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text11" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text12" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text13" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text14" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text15" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text16" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text17" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text18" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text19" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text20" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text21" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text22" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text23" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text24" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text25" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text26" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text27" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text28" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text29" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text30" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text31" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text32" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text33" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text34" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text35" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text36" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text37" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text38" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text39" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text40" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="100"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text41" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text42" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text43" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text44" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text45" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text46" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text47" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text48" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text49" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text50" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text51" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text52" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text53" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text54" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text55" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text56" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text57" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text58" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text59" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text60" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text61" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text62" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text63" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text64" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text65" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text66" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text67" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text68" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text69" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text70" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text71" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text72" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text73" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text74" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text75" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text76" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text77" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text78" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text79" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text80" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text81" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text82" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text83" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text84" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Text85" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="50"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric1" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric2" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric3" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric4" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric5" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric6" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric7" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric8" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric9" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric10" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric11" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric12" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric13" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric14" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric15" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric16" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric17" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric18" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric19" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Numeric20" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Date1" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:dateTime"/>																
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Date2" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:dateTime"/>																	
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Date3" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:dateTime"/>																	
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Date4" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:dateTime"/>																	
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="Date5" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:dateTime"/>																	
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GRText1" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GRText2" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GRText3" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GRText4" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GRText5" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:restriction base="xs:string">
+																															<xs:maxLength value="250"/>
+																															<xs:whiteSpace value="collapse"/>
+																														</xs:restriction>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GRNum1" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GRNum2" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GRNum3" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GRNum4" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GRNum5" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GRDate1" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:dateTime"/>																	
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GRDate2" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:dateTime"/>																	
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GRDate3" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:dateTime"/>																	
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GRDate4" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:dateTime"/>																	
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="GRDate5" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:dateTime"/>																	
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="InvoicedNetSum" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																												<xs:element name="InvoicedQuantity" nillable="true" minOccurs="0" maxOccurs="1">
+																													<xs:simpleType>
+																														<xs:list itemType="xs:decimal"/>
+																													</xs:simpleType>
+																												</xs:element>
+																											</xs:all>
+																										</xs:complexType>
+																									</xs:element>
+																								</xs:sequence>
+																							</xs:complexType>
+																						</xs:element>
+																					</xs:all>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:all>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="MainSupplierCode" minOccurs="1" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:minLength value="2"/>
+													<xs:maxLength value="25"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="MainSupplierName" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">													
+													<xs:maxLength value="250"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="GoodsReceiptsBasedInvoicing" maxOccurs="1" minOccurs="0">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">										
+													<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+													<xs:maxLength value="5"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Deleted" maxOccurs="1" minOccurs="0">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">										
+													<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+													<xs:maxLength value="5"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Created" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:dateTime"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Closed" maxOccurs="1" minOccurs="0">
+											<xs:simpleType>
+												<xs:restriction base="xs:string">										
+													<xs:pattern value="0|1|true|false|True|False|TRUE|FALSE|"/>
+													<xs:maxLength value="5"/>
+													<xs:whiteSpace value="collapse"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="ValidFrom" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:date"/>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="ValidTo" nillable="true" minOccurs="0" maxOccurs="1">
+											<xs:simpleType>
+												<xs:list itemType="xs:date"/>
+											</xs:simpleType>
+										</xs:element>
+									</xs:all>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

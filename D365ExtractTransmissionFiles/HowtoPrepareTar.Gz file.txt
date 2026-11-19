@@ -1,0 +1,59 @@
+PowerShell
+------------
+
+//Tworzenie .tar
+
+$targetDates = @(
+     "2026-06-30",
+     "2026-07-15",
+     "2026-07-16",
+     "2026-07-20",
+     "2026-07-21",
+     "2026-07-23",
+     "2026-07-29"
+ )
+
+foreach ($dateStr in $targetDates) {
+     $d = (Get-Date $dateStr).Date
+     $tarName = "faktury_$dateStr.tar"
+
+     $fileNames = (Get-ChildItem -File | Where-Object { $_.LastWriteTime.Date -eq $d }).Name
+
+     if ($fileNames) {
+         Write-Host "Pakowanie dla dnia $dateStr ($($fileNames.Count) plików)..." -ForegroundColor Green
+         $fileNames | tar -cf $tarName -T -
+         Write-Host " -> Utworzono: $tarName" -ForegroundColor Gray
+     } else {
+         Write-Host "Brak plików dla dnia $dateStr (pominito)" -ForegroundColor Yellow
+     }
+ }
+
+//Tworzenie .tar.gz
+$targetDates = @(
+     "2026-06-30",
+     "2026-07-15",
+     "2026-07-16",
+     "2026-07-20",
+     "2026-07-21",
+     "2026-07-23",
+     "2026-07-29"
+)
+
+foreach ($dateStr in $targetDates) {
+     $d = (Get-Date $dateStr).Date
+     # 1. Zmiana nazwy pliku wyjściowego na .tar.gz
+     $tarName = "faktury_$dateStr.tar.gz"
+
+     $fileNames = (Get-ChildItem -File | Where-Object { $_.LastWriteTime.Date -eq $d }).Name
+
+     if ($fileNames) {
+         Write-Host "Pakowanie do tar.gz dla dnia $dateStr ($($fileNames.Count) plików)..." -ForegroundColor Green
+         
+         # 2. Dodanie flagi '-z' do tar (zamiana -cf na -czf)
+         $fileNames | tar -czf $tarName -T -
+         
+         Write-Host " -> Utworzono: $tarName" -ForegroundColor Gray
+     } else {
+         Write-Host "Brak plików dla dnia $dateStr (pominito)" -ForegroundColor Yellow
+     }
+}

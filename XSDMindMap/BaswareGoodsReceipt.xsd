@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="GoodsReceipt">
+		<xs:complexType>			
+			<xs:all>
+			
+				<xs:element name="OrderNumber" minOccurs="1" maxOccurs="1">
+					<xs:simpleType>
+						<xs:annotation>
+							<xs:documentation>
+							(string, 2-100) Order Number 
+							</xs:documentation>
+						</xs:annotation>
+						<xs:restriction base="xs:string">			
+							<xs:minLength value="2"/>
+							<xs:maxLength value="100"/>
+							<xs:whiteSpace value="collapse"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>	
+				
+				<xs:element name="ExtGRNumber" minOccurs="1" maxOccurs="1">
+					<xs:simpleType>
+						<xs:annotation>
+							<xs:documentation>
+							(string, 2-100) Ext GR Number 
+							</xs:documentation>
+						</xs:annotation>
+						<xs:restriction base="xs:string">			
+							<xs:minLength value="2"/>
+							<xs:maxLength value="100"/>
+							<xs:whiteSpace value="collapse"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>	
+				
+				<xs:element name="OrganizationUnitCode" type="xs:string" nillable="true"  minOccurs="0" maxOccurs="1" />
+				<xs:element name="OrganizationIdentifier" type="xs:string" nillable="true"  minOccurs="0" maxOccurs="1" />
+		 
+				<xs:element name="ReceiveDateTime" nillable="true" minOccurs="0" maxOccurs="1">
+					<xs:simpleType>
+						<xs:list itemType="xs:dateTime"/>
+					</xs:simpleType>
+				</xs:element>
+
+				<xs:element name="ReceiverEmail" minOccurs="1" maxOccurs="1">
+					<xs:simpleType>
+						<xs:annotation>
+							<xs:documentation>
+							(string, 2-640) Receiver Email 
+							</xs:documentation>
+						</xs:annotation>
+						<xs:restriction base="xs:string">			
+							<xs:minLength value="2"/>
+							<xs:maxLength value="640"/>
+							<xs:whiteSpace value="collapse"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>				
+				
+				<xs:element name="GoodsReceiptLines" minOccurs="1" maxOccurs="1">
+					<xs:complexType>
+						<xs:annotation>
+							<xs:documentation>
+							(GoodsReceiptLine, 1-100) Goods Receipt Lines
+							</xs:documentation>
+						</xs:annotation>
+						<xs:sequence>
+							<xs:element name="GoodsReceiptLine" type="goodsReceiptLines" minOccurs="1" maxOccurs="100"/>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				
+			</xs:all>
+		</xs:complexType>
+	</xs:element>    
+	
+	<xs:complexType name="goodsReceiptLines">
+		<xs:all>
+		
+			<xs:element name="OrderLineNumber" minOccurs="1" maxOccurs="1">
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:minInclusive value="1"/>
+					</xs:restriction>
+			    </xs:simpleType>
+			</xs:element>	
+			
+			<xs:element name="ReceivedQuantity" minOccurs="1" maxOccurs="1">
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:minExclusive value="0"/>						
+					</xs:restriction>
+			    </xs:simpleType>
+			</xs:element>	
+			
+			<xs:element name="DeliveryNoteNumber" nillable="true" minOccurs="0" maxOccurs="1" type="xs:string"/>
+			<xs:element name="ProductSerialNumber" nillable="true" minOccurs="0" maxOccurs="1" type="xs:string"/>
+		</xs:all>
+	</xs:complexType>
+	
+</xs:schema>

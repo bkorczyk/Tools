@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Dokumentacja Skryptu Ekstraktora Faktur D365 (v2)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #24292e;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e1e4e8;
+        }
+        h1 {
+            color: #1a2b4c;
+            border-bottom: 2px solid #2b5797;
+            padding-bottom: 10px;
+            font-size: 24px;
+            margin-top: 0;
+        }
+        h2 {
+            color: #2b5797;
+            font-size: 18px;
+            margin-top: 28px;
+            border-left: 4px solid #2b5797;
+            padding-left: 10px;
+        }
+        p, li {
+            font-size: 14px;
+        }
+        code, pre {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            background-color: #f6f8fa;
+            border-radius: 4px;
+        }
+        code {
+            padding: 2px 6px;
+            font-size: 13px;
+            color: #d73a49;
+        }
+        pre {
+            padding: 16px;
+            overflow-x: auto;
+            border: 1px solid #e1e4e8;
+            font-size: 13px;
+            line-height: 1.45;
+            color: #24292e;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 6px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px 12px;
+            border: 1px solid #e1e4e8;
+            font-size: 13px;
+        }
+        th {
+            background-color: #f1f5f9;
+        }
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #6a737d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dokumentacja Skryptu: Ekstraktor Faktur D365 v2</h1>
+        <p>Dokumentacja skryptu Python do przeszukiwania i ekstrakcji plików XML z archiwów <code>TAR / TAR.GZ / TGZ</code> z obsługą listy faktur z CLI, plików CSV oraz filtra pełnego.</p>
+
+        <h2>1. Opis Programu</h2>
+        <p>Skrypt automatycznie przeszukuje archiwa skompresowane i wyciąga pliki integracyjne XML systemu Dynamics 365. Numery faktur można przekazać na 3 sposoby:</p>
+        <ul>
+            <li><strong>Lista bezpośrednio z wiersza poleceń (CLI):</strong> ciąg znaków oddzielony przecinkami (np. <code>"FV100, FV101, FV102"</code>).</li>
+            <li><strong>Plik CSV:</strong> ścieżka do pliku zawierającego listę faktur.</li>
+            <li><strong>Pełna ekstrakcja (<code>"*"</code>):</strong> wypakowuje wszystkie znalezione faktury.</li>
+        </ul>
+
+        <h2>2. Wymagania Wdrożeniowe</h2>
+        <ul>
+            <li>Środowisko: <code>Python 3.10+</code></li>
+            <li>Biblioteki standardowe: <code>argparse</code>, <code>csv</code>, <code>os</code>, <code>re</code>, <code>tarfile</code>, <code>xml.etree.ElementTree</code>.</li>
+        </ul>
+
+        <h2>3. Składnia CLI i Parametry</h2>
+        <pre>python script.py &lt;tar_file&gt; &lt;invoices_param&gt; [-o OUTPUT_DIR]</pre>
+        <table>
+            <thead>
+                <tr>
+                    <th>Parametr</th>
+                    <th>Typ</th>
+                    <th>Opis</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>tar_file</code></td>
+                    <td>Wymagany</td>
+                    <td>Ścieżka do archiwum (<code>.tar</code>, <code>.tar.gz</code>, <code>.tgz</code>)</td>
+                </tr>
+                <tr>
+                    <td><code>invoices_param</code></td>
+                    <td>Wymagany</td>
+                    <td>Lista po przecinku <code>"faktura1, faktura2"</code> LUB ścieżka do CSV LUB <code>"*"</code></td>
+                </tr>
+                <tr>
+                    <td><code>-o, --output</code></td>
+                    <td>Opcjonalny</td>
+                    <td>Katalog docelowy (domyślnie: <code>./extracted_invoices</code>)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>4. Przykłady Użycia</h2>
+
+        <p><strong>a) Podanie listy faktur w wierszu poleceń:</strong></p>
+        <pre>python script.py archiwum.tar.gz "17360, 17361, 17362"</pre>
+
+        <p><strong>b) Użycie pliku CSV:</strong></p>
+        <pre>python script.py archiwum.tar.gz plik_faktur.csv</pre>
+
+        <p><strong>c) Wypakowanie wszystkich faktur do wskazanego folderu:</strong></p>
+        <pre>python script.py archiwum.tgz "*" -o ./wszystkie_wyjscie</pre>
+
+        <footer>
+            Dokumentacja v2 wygenerowana dla skryptu ekstraktora D365
+        </footer>
+    </div>
+</body>
+</html>

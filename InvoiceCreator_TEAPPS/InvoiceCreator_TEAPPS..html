@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Dokumentacja Aplikacji Generator Faktur TEAPPS 3.0</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #24292e;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e1e4e8;
+        }
+        h1 {
+            color: #1a2b4c;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            font-size: 24px;
+            margin-top: 0;
+        }
+        h2 {
+            color: #007bff;
+            font-size: 18px;
+            margin-top: 28px;
+            border-left: 4px solid #007bff;
+            padding-left: 10px;
+        }
+        p, li {
+            font-size: 14px;
+        }
+        code, pre {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            background-color: #f6f8fa;
+            border-radius: 4px;
+        }
+        code {
+            padding: 2px 6px;
+            font-size: 13px;
+            color: #d73a49;
+        }
+        pre {
+            padding: 16px;
+            overflow-x: auto;
+            border: 1px solid #e1e4e8;
+            font-size: 13px;
+            line-height: 1.45;
+            color: #24292e;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 6px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px 12px;
+            border: 1px solid #e1e4e8;
+            font-size: 13px;
+        }
+        th {
+            background-color: #f1f5f9;
+        }
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #6a737d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dokumentacja Aplikacji: Generator Faktur TEAPPS 3.0</h1>
+        <p>Dokumentacja aplikacji webowej Flask do parsowania zamówień PO, generowania e-faktur w formacie TEAPPSXML 3.0 oraz automatycznej wysyłki plików na serwer FTP Basware.</p>
+
+        <h2>1. Opis Programu</h2>
+        <p>Aplikacja umożliwia weryfikację i generowanie plików faktur w dwóch podstawowych trybach:</p>
+        <ul>
+            <li><strong>Debit Invoice:</strong> Wystawianie faktury debetowej wyłącznie na podstawie ręcznie wprowadzonych danych nagłówkowych.</li>
+            <li><strong>Purchase Order Invoice:</strong> Wgrywanie plików zamówień XML (np. <code>Order_Template.xml.bak</code>), dynamiczne wyliczanie wartości pozycji odbiorów (GR) oraz dopasowywanie kwot.</li>
+        </ul>
+        <p>Program posiada wbudowany moduł pobierania plików XML na dysk lokalny oraz moduł automatycznej transmisji FTP do systemu Basware.</p>
+
+        <h2>2. Wymagania Wdrożeniowe</h2>
+        <ul>
+            <li>Środowisko: <code>Python 3.10+</code></li>
+            <li>Zależności zewnętrzne: <code>Flask</code>, <code>python-dotenv</code></li>
+            <li>Biblioteki standardowe: <code>csv</code>, <code>datetime</code>, <code>ftplib</code>, <code>io</code>, <code>os</code>, <code>re</code>, <code>xml.etree.ElementTree</code></li>
+        </ul>
+
+        <h2>3. API i Endpointy Server-side</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Metoda</th>
+                    <th>Opis</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>/api/upload</code></td>
+                    <td><code>POST</code></td>
+                    <td>Wgrywanie i parsowanie pliku zamówienia XML (PO)</td>
+                </tr>
+                <tr>
+                    <td><code>/api/delete-order/&lt;id&gt;</code></td>
+                    <td><code>DELETE</code></td>
+                    <td>Usuwanie zamówienia z bieżącej sesji aplikacji</td>
+                </tr>
+                <tr>
+                    <td><code>/api/generate-xml</code></td>
+                    <td><code>POST</code></td>
+                    <td>Generowanie i pobieranie pliku XML z fakturą TEAPPS 3.0</td>
+                </tr>
+                <tr>
+                    <td><code>/api/send-to-basware</code></td>
+                    <td><code>POST</code></td>
+                    <td>Generowanie XML w RAM i bezpośrednie wysłanie na FTP Basware</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>4. Konfiguracja Środowiskowa (.env)</h2>
+        <p>Dane dostępowe do serwera FTP należy zdefiniować w pliku <code>.env</code> w katalogu głównym projektu:</p>
+        <pre>FTP_HOST=ftp.basware.com
+FTP_USER=twój_login
+FTP_PASS=twoje_haslo
+FTP_PORT=21
+FTP_DIR=/inbound</pre>
+
+        <h2>5. Instrukcja Obsługi</h2>
+        <p><strong>a) Uruchomienie serwera:</strong></p>
+        <pre>python InvoiceCreator_TEAPPS.py</pre>
+
+        <p><strong>b) Generowanie i pobranie faktury:</strong></p>
+        <p>Wypełnij formularz w przeglądarce pod adresem <code>http://127.0.0.1:5000/</code> i kliknij przycisk <code>Pobierz Fakturę TEAPPS 3.0 (XML)</code>.</p>
+
+        <p><strong>c) Wysyłka bezpośrednio do Basware:</strong></p>
+        <p>Kliknij niebieski przycisk <code>Wyślij do Basware (FTP)</code>. System przekaże plik bez zrzucania go na lokalny dysk i wyświetli komunikat o statusie połączenia.</p>
+
+        <footer>
+            Dokumentacja wygenerowana dla aplikacji Generator Faktur TEAPPS 3.0 (Flask/FTP)
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basware ERP Connector Specification & Visual Logic</title>
+    <!-- Mermaid.js for rendering flowchart diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-card: #1e293b;
+            --bg-header: #162032;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-purple: #c084fc;
+            --accent-green: #4ade80;
+            --accent-amber: #fbbf24;
+            --border-color: #334155;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--bg-primary); color: var(--text-main); padding: 2rem; line-height: 1.6; }
+        .header { margin-bottom: 2.5rem; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }
+        .header h1 { font-size: 2.4rem; color: var(--accent-blue); margin-bottom: 0.5rem; }
+        .header p { color: var(--text-muted); font-size: 1.1rem; max-width: 800px; margin: 0 auto; }
+        
+        .section-title { font-size: 1.6rem; color: var(--accent-blue); margin: 2rem 0 1rem 0; display: flex; align-items: center; gap: 0.5rem; }
+        
+        /* Flowchart Container */
+        .diagram-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .diagram-card { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); padding: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .diagram-card h3 { color: var(--accent-purple); margin-bottom: 1rem; font-size: 1.2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+        .mermaid { background: #0b1120; border-radius: 8px; padding: 1rem; overflow-x: auto; display: flex; justify-content: center; }
+
+        /* Interactive Controls */
+        .controls { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; justify-content: space-between; align-items: center; }
+        .search-box { flex: 1; min-width: 320px; }
+        .search-box input {
+            width: 100%; padding: 0.8rem 1.2rem; border-radius: 8px; border: 1px solid var(--border-color);
+            background: var(--bg-card); color: var(--text-main); font-size: 1rem; outline: none; transition: border-color 0.2s;
+        }
+        .search-box input:focus { border-color: var(--accent-blue); box-shadow: 0 0 10px rgba(56, 189, 248, 0.25); }
+        .filter-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .filter-btn {
+            padding: 0.6rem 1.1rem; border-radius: 6px; border: 1px solid var(--border-color);
+            background: var(--bg-card); color: var(--text-muted); cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.2s;
+        }
+        .filter-btn.active, .filter-btn:hover { background: var(--accent-blue); color: #000; font-weight: 700; border-color: var(--accent-blue); }
+        
+        .stats-bar { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; font-size: 0.95rem; color: var(--text-muted); }
+        .stat-item { background: var(--bg-card); padding: 0.6rem 1.2rem; border-radius: 6px; border: 1px solid var(--border-color); }
+        .stat-item strong { color: var(--accent-blue); font-size: 1.1rem; }
+
+        /* Data Table */
+        table { width: 100%; border-collapse: collapse; background: var(--bg-card); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.3); margin-bottom: 3rem; }
+        th, td { padding: 1.1rem; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; }
+        th { background: var(--bg-header); color: var(--accent-blue); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem; }
+        tr:hover { background-color: rgba(255,255,255,0.025); }
+        
+        /* Badges & Code */
+        .badge { display: inline-block; padding: 0.3rem 0.7rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
+        .badge-direct { background: rgba(74, 222, 128, 0.15); color: var(--accent-green); border: 1px solid var(--accent-green); }
+        .badge-cascade { background: rgba(192, 132, 252, 0.15); color: var(--accent-purple); border: 1px solid var(--accent-purple); }
+        .badge-db { background: rgba(251, 191, 36, 0.15); color: var(--accent-amber); border: 1px solid var(--accent-amber); }
+        .badge-sys { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); border: 1px solid var(--accent-blue); }
+        
+        code { font-family: 'Fira Code', 'Courier New', monospace; background: rgba(0,0,0,0.4); padding: 0.2rem 0.5rem; border-radius: 4px; color: #e2e8f0; font-size: 0.88rem; }
+        .condition-text { color: var(--accent-amber); font-size: 0.85rem; margin-top: 0.4rem; display: block; }
+        .desc-text { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.3rem; line-height: 1.4; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Basware ERP Connector Technical Specification</h1>
+        <p>Comprehensive English specification & reverse-engineered decision trees for the <code>NewInvoice</code> method.</p>
+    </div>
+
+    <h2 class="section-title">📌 Business Logic Decision Trees (Flowcharts)</h2>
+    <div class="diagram-grid">
+        <div class="diagram-card">
+            <h3>1. Supplier ID Determination Cascade (7-Step Priority)</h3>
+            <div class="mermaid">graph TD
+    A[Start: Determine Supplier ID] --> B{Step 1: Check XML Supplier Code<br>CUSTOMER_ID in ADM_SUPPLIER?}
+    B -- Found (Count=1) --> S[Set SupplierId & Exit]
+    B -- Not Found --> C{Step 2: Check Network Party ID<br>VAT_NUMBER / NET_SERVICE_ID in ADM_SUPPLIER_IDENTIFIER?}
+    C -- Found (Count=1) --> S
+    C -- Not Found --> D{Step 3: Check Cleaned VAT/NIP<br>SupplierVatNumber in ADM_SUPPLIER_IDENTIFIER?}
+    D -- Found (Count=1) --> S
+    D -- Not Found --> E{Step 4: Check Local Tax ID<br>LocalSupplierTaxID & PAYMENT_DENIED=0?}
+    E -- Found (Count=1) --> S
+    E -- Not Found --> F{Step 5: Check Party ID + Invoice Currency<br>CURRENCY_CODE match?}
+    F -- Found (Count=1) --> S
+    F -- Not Found --> G{Step 6: Check Bank Account<br>BBAN or IBAN in ADM_SUPPLIER_BANK_ACCOUNT?}
+    G -- Found (Count=1) --> S
+    G -- Not Found --> H{Step 7: PO Fallback<br>Query OM_ORDER_DATA by OrderNumber}
+    H -- Found & Logistic Filter Passed --> S
+    H -- Not Found --> X[Supplier Unresolved / Error]</div>
+        </div>
+        <div class="diagram-card">
+            <h3>2. Order Number Extraction & Filtering Flow</h3>
+            <div class="mermaid">graph TD
+    A[Start: Determine Order Number] --> B{Check Company Exclusions<br>TAB, HAL7, THAB, TREASURY, TIND?}
+    B -- Yes --> C[Clear OrderNumber]
+    B -- No --> D{Header Order Number Available?}
+    D -- Type CO --> E[Use Header CO Order]
+    D -- Type Non-VN --> F[Use Header Non-VN Order]
+    D -- Type VN --> G[Use Header VN Order]
+    D -- Generic INVOICE_ORDER_NUMBER --> H[Use INVOICE_ORDER_NUMBER]
+    D -- None Found in Header --> I[Loop Invoice Line Items]
+    I --> J[Collect & Deduplicate Row ORDER_NUMBERs]
+    J --> K[Concatenate with Commas]
+    E & F & G & H & K --> L{Check Company Suffix<br>TSSUS52 / TSSUS262?}
+    L -- Yes --> M[Truncate to First 8 Chars]
+    L -- No --> N{Logistic Supplier Check<br>Order Supplier != Identified Supplier?}
+    M --> N
+    N -- Conflict Found --> C
+    N -- Passed --> O[Final OrderNumber Output]</div>
+        </div>
+        <div class="diagram-card">
+            <h3>3. Reference Person Priority Chain</h3>
+            <div class="mermaid">graph TD
+    A[Start: Determine Reference Person] --> B{Check BuyerReference<br>TRIM LEN >= 2?}
+    B -- Yes --> C[Assign ReferencePerson = BuyerReference]
+    B -- No --> D{Check ContactReference<br>TRIM LEN >= 2?}
+    D -- Yes --> E[Assign ReferencePerson = ContactReference]
+    D -- No --> F{Check ContactPerson<br>TRIM LEN >= 2?}
+    F -- Yes --> G[Assign ReferencePerson = ContactPerson]
+    F -- No --> H[Assign ReferencePerson = Empty String]</div>
+        </div>
+        <div class="diagram-card">
+            <h3>4. Delivery Date Processing (Scanned vs E-Invoice)</h3>
+            <div class="mermaid">graph TD
+    A[Start: Determine Delivery Date] --> B{Invoice Source Type?}
+    B -- Scanned Invoice --> C[Extract FREE_TEXT DeliveryDate]
+    C --> D[Split Multiple Dates by Semicolon]
+    D --> E{Validate Year-Month Match across Lines}
+    E -- YYMM Match Valid --> F[Take Latest Day]
+    E -- YYMM Mismatch --> G[Discard Delivery Date]
+    B -- E-Invoice --> H[Extract Header DELIVERY_DATE]
+    H --> I[Loop Article Line Items & Compare Line Dates]
+    I --> J{Check Year-Month Uniformity}
+    J -- Valid --> K[Take Latest Delivery Date]
+    J -- Invalid --> L[Use Header Date Only]</div>
+        </div>
+        <div class="diagram-card" style="grid-column: 1 / -1;">
+            <h3>5. Tax Code Determination & PO Matching</h3>
+            <div class="mermaid">graph TD
+    A[Start: Determine Tax Code] --> B{Is Order Number Available?}
+    B -- Yes (PO Invoice) --> C[Query OM_ORDER_DATA & OM_ORDER_ROW]
+    C --> D{Do all line items share same TAX_CODE?}
+    D -- Yes --> E[Assign TaxCode & Set TaxCodeSelectionType = 1]
+    D -- Mixed Tax Codes --> F[Set TaxCodeSelectionType = 9 & Clear Header TaxCode]
+    B -- No (Non-PO Invoice) --> G[Query ADM_SUPPLIER_ADDITIONAL_DATA for TaxCodes]
+    G --> H{TaxCode Found?}
+    H -- Yes --> I[Assign TaxCode & Set TaxCodeSelectionType = 2]
+    H -- No --> J[Leave TaxCode Empty]
+    E & F & I --> K{Check Company Special Rules<br>BUSADE020?}
+    K -- DE21 / DES6 / DEW6 --> L[Remap to DE22 / DES9 / DEW9]
+    K -- Other / None --> M[Final TaxCode Output]</div>
+        </div>
+    </div>
+
+    <h2 class="section-title">📋 Field Mapping Matrix & Rule Directory</h2>
+    <div class="controls">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search field name, parameter, SQL query, or keyword...">
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterCategory('ALL')">All Fields</button>
+            <button class="filter-btn" onclick="filterCategory('Direct XML Mapping')">Direct XML</button>
+            <button class="filter-btn" onclick="filterCategory('Cascading Fallback')">Cascading</button>
+            <button class="filter-btn" onclick="filterCategory('DB Lookup & Rules')">DB & Rules</button>
+            <button class="filter-btn" onclick="filterCategory('System Metadata')">System</button>
+        </div>
+    </div>
+
+    <div class="stats-bar">
+        <div class="stat-item">Total Parameters: <strong id="totalCount">0</strong></div>
+        <div class="stat-item">Visible Parameters: <strong id="visibleCount">0</strong></div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 40px;">#</th>
+                <th>Basware Field Name</th>
+                <th>XML Parameter</th>
+                <th>Category</th>
+                <th>Mapping Expression & Conditions</th>
+                <th>Description & Business Behavior</th>
+            </tr>
+        </thead>
+        <tbody id="paramsTableBody"></tbody>
+    </table>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+
+        const paramsData = [
+  {
+    "param_name": "BaseDate",
+    "basware_field": "Base Line Date",
+    "value_expr": "{v,InvoiceDate}",
+    "include_condition": "{v,isInvoiceDate}",
+    "raw_comment": "Basware: Base Line Date",
+    "logic_type": "Business Rule / Conditional",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "CashDate",
+    "basware_field": "Cash Date",
+    "value_expr": "",
+    "include_condition": "",
+    "raw_comment": "Basware: Cash Date",
+    "logic_type": "Business Rule / Conditional",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "CurrencyCode",
+    "basware_field": "Currency Code",
+    "value_expr": "{v,CurrencyCode}",
+    "include_condition": "",
+    "raw_comment": "Basware: Currency Code",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "CurrencyCodeCompany",
+    "basware_field": "CurrencyCodeComp",
+    "value_expr": "{v,CurrencyCode}",
+    "include_condition": "",
+    "raw_comment": "Basware: CurrencyCodeComp",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "CurrencyCodeOrganization",
+    "basware_field": "CurrencyCodeOrg",
+    "value_expr": "{v,CurrencyCode}",
+    "include_condition": "",
+    "raw_comment": "Basware: CurrencyCodeOrg",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Num10",
+    "basware_field": "Exchange Rate TB",
+    "value_expr": "{v,ExchangeRate}",
+    "include_condition": "",
+    "raw_comment": "Basware: Exchange Rate TB",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Date2",
+    "basware_field": "Scan Date",
+    "value_expr": "{v,Date2}",
+    "include_condition": "",
+    "raw_comment": "Basware: Scan Date",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "GrossSum",
+    "basware_field": "Gross Total",
+    "value_expr": "{v,HeaderSumGross}",
+    "include_condition": "",
+    "raw_comment": "Basware: Gross Total",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "NetSum",
+    "basware_field": "Net Total",
+    "value_expr": "{v,HeaderSumNet}",
+    "include_condition": "",
+    "raw_comment": "Basware: Net Total",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "TaxSum",
+    "basware_field": "Tax Sum",
+    "value_expr": "{v,HeaderTaxSum}",
+    "include_condition": "",
+    "raw_comment": "Basware: Tax Sum",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Num11",
+    "basware_field": "Tax Sum TB",
+    "value_expr": "{v,HeaderTaxSum}",
+    "include_condition": "",
+    "raw_comment": "Basware: Tax Sum TB",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Num23",
+    "basware_field": "Tax Sum2",
+    "value_expr": "{v,HeaderTaxSum2}",
+    "include_condition": "{F,INSTR(v,CompanyEntityValidations;&quot;V_051&quot;;TRUE;FALSE)}",
+    "raw_comment": "Basware: Tax Sum2",
+    "logic_type": "Business Rule / Conditional",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "InvoiceDate",
+    "basware_field": "Invoice Date",
+    "value_expr": "{v,InvoiceDate}",
+    "include_condition": "{v,isInvoiceDate}",
+    "raw_comment": "Basware: Invoice Date",
+    "logic_type": "Business Rule / Conditional",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "InvoiceNumber",
+    "basware_field": "Invoice Number",
+    "value_expr": "{v,InvoiceNumber}",
+    "include_condition": "",
+    "raw_comment": "Basware: Invoice Number",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "InvoiceTypeCode",
+    "basware_field": "Invoice Type Code",
+    "value_expr": "{v,InvoiceType}",
+    "include_condition": "",
+    "raw_comment": "Basware: Invoice Type Code",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "OrderNumber",
+    "basware_field": "Order Number",
+    "value_expr": "{v,OrderNumber}",
+    "include_condition": "",
+    "raw_comment": "Basware: Order Number",
+    "logic_type": "Cascading Fallback",
+    "description": "Extracted from XML header (CO -> Non-VN -> VN -> INVOICE_ORDER_NUMBER) or concatenated from line items. Filtered for specific company codes and logistic suppliers."
+  },
+  {
+    "param_name": "ReferencePerson",
+    "basware_field": "Reference Person",
+    "value_expr": "{v,BuyerReference}",
+    "include_condition": "",
+    "raw_comment": "Basware: Reference Person",
+    "logic_type": "Cascading Fallback",
+    "description": "Selected via priority chain: BuyerReference -> ContactReference -> ContactPerson -> Empty (min length >= 2 chars)."
+  },
+  {
+    "param_name": "ReferencePerson",
+    "basware_field": "Reference Person",
+    "value_expr": "{v,ContactReference}",
+    "include_condition": "",
+    "raw_comment": "Basware: Reference Person",
+    "logic_type": "Cascading Fallback",
+    "description": "Selected via priority chain: BuyerReference -> ContactReference -> ContactPerson -> Empty (min length >= 2 chars)."
+  },
+  {
+    "param_name": "ReferencePerson",
+    "basware_field": "Reference Person",
+    "value_expr": "{v,ContactPerson}",
+    "include_condition": "",
+    "raw_comment": "Basware: Reference Person",
+    "logic_type": "Cascading Fallback",
+    "description": "Selected via priority chain: BuyerReference -> ContactReference -> ContactPerson -> Empty (min length >= 2 chars)."
+  },
+  {
+    "param_name": "ReferencePerson",
+    "basware_field": "Reference Person",
+    "value_expr": "",
+    "include_condition": "",
+    "raw_comment": "Basware: Reference Person",
+    "logic_type": "Cascading Fallback",
+    "description": "Selected via priority chain: BuyerReference -> ContactReference -> ContactPerson -> Empty (min length >= 2 chars)."
+  },
+  {
+    "param_name": "Origin",
+    "basware_field": "Origin",
+    "value_expr": "{v,Origin}",
+    "include_condition": "",
+    "raw_comment": "",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "ContractNumber",
+    "basware_field": "ContractNumber",
+    "value_expr": "{v,ContractNumber}",
+    "include_condition": "",
+    "raw_comment": "Basware: ContractNumber",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "ReferenceNumber",
+    "basware_field": "Reference Number",
+    "value_expr": "{v,ReferenceNumber}",
+    "include_condition": "",
+    "raw_comment": "Basware: Reference Number",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text11",
+    "basware_field": "AP Status",
+    "value_expr": "{F,DBSELECT(\"SELECT TEXT_3 FROM EXT_INV_LIST_17\n\t\t\t\t\t\t\t\t\tWHERE TEXT_1='SupplierAPStatus' AND ADMINISTRATIVE_SITE_ID=? AND TEXT_2=?\";v,providerconnection;v,CompanyId;v,SupplierCode)}",
+    "include_condition": "{F,INSTR(v,CompanyEntityConfigurations;&quot;C_109&quot;;TRUE;FALSE)}",
+    "raw_comment": "Basware: AP Status",
+    "logic_type": "DB Lookup & Rules",
+    "description": "Pulls supplier AP status from EXT_INV_LIST_17 table if C_109 configuration is enabled for the company."
+  },
+  {
+    "param_name": "Text19",
+    "basware_field": "Scan Service Id",
+    "value_expr": "{v,ScanServiceId_BLOCK_ID}",
+    "include_condition": "",
+    "raw_comment": "Basware: Scan Service Id",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "TaxCode",
+    "basware_field": "TaxCode",
+    "value_expr": "{v,HeaderTaxCode}",
+    "include_condition": "",
+    "raw_comment": "Basware: TaxCode",
+    "logic_type": "Direct XML Mapping",
+    "description": "Matched against Purchase Order rows in ERP (OM_ORDER_DATA). Falls back to Supplier Master default (TaxCodes). Special handling for BUSADE020."
+  },
+  {
+    "param_name": "TaxPercent",
+    "basware_field": "TaxPercent",
+    "value_expr": "{v,HeaderTaxPercentage}",
+    "include_condition": "",
+    "raw_comment": "Basware: TaxPercent",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text21",
+    "basware_field": "Item Tax Code",
+    "value_expr": "{v,HeaderItemTaxCode}",
+    "include_condition": "",
+    "raw_comment": "Basware: Item Tax Code",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "PaymentPlanReference",
+    "basware_field": "Payment Plan Reference",
+    "value_expr": "{v,PaymentPlanReference}",
+    "include_condition": "",
+    "raw_comment": "Basware: Payment Plan Reference",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Date3",
+    "basware_field": "Delivery Date",
+    "value_expr": "{v,DeliveryDate}",
+    "include_condition": "{v,isInvoiceDeliveryDate}",
+    "raw_comment": "Basware: Delivery Date",
+    "logic_type": "Cascading Fallback",
+    "description": "For Scanned invoices: extracted from free text, validated by YYMM match across lines. For E-Invoices: header date compared with line item delivery dates."
+  },
+  {
+    "param_name": "Date4",
+    "basware_field": "Invoice Due Date",
+    "value_expr": "{v,DueDate}",
+    "include_condition": "{v,isDueDate}",
+    "raw_comment": "Basware: Invoice Due Date",
+    "logic_type": "Business Rule / Conditional",
+    "description": "Pulls due date from XML. Defaults to current system date if omitted."
+  },
+  {
+    "param_name": "Text23",
+    "basware_field": "Supplier Vat Number",
+    "value_expr": "{v,SupplierVatNumber}",
+    "include_condition": "",
+    "raw_comment": "Basware: Supplier Vat Number",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text25",
+    "basware_field": "Supplier Local Tax ID",
+    "value_expr": "{v,LocalSupplierTaxID}",
+    "include_condition": "",
+    "raw_comment": "Basware: Supplier Local Tax ID",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text26",
+    "basware_field": "Trelleborg VAT Number",
+    "value_expr": "{v,TrelleborgVatNumber}",
+    "include_condition": "",
+    "raw_comment": "Basware: Trelleborg VAT Number",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text27",
+    "basware_field": "Keywords",
+    "value_expr": "{v,KeyWords}",
+    "include_condition": "",
+    "raw_comment": "Basware: Keywords",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text28",
+    "basware_field": "Company Name on Invoice",
+    "value_expr": "{v,CompNameFromInvoice}",
+    "include_condition": "",
+    "raw_comment": "Basware: Company Name on Invoice",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Num7",
+    "basware_field": "Delivery Address",
+    "value_expr": "{v,DeliveryAddress}",
+    "include_condition": "",
+    "raw_comment": "Basware: Delivery Address",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Num8",
+    "basware_field": "Tax Code selection type",
+    "value_expr": "{v,TaxCodeSelectionType}",
+    "include_condition": "",
+    "raw_comment": "Basware: Tax Code selection type",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Num2",
+    "basware_field": "Auto Send to Process",
+    "value_expr": "{v,Num2}",
+    "include_condition": "",
+    "raw_comment": "Basware: Auto Send to Process",
+    "logic_type": "Direct XML Mapping",
+    "description": "Determined by checking AUTOSENDTOPROCESSSUPPLIER entries in EXT_INV_LIST_17 by company, supplier, and invoice type. Returns 2 (auto-send) or 1 (manual)."
+  },
+  {
+    "param_name": "Num22",
+    "basware_field": "Num22",
+    "value_expr": "{v,SupplierInvoiceWarning}",
+    "include_condition": "",
+    "raw_comment": "",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "SupplierBankAccountBBAN",
+    "basware_field": "Supplier BBAN",
+    "value_expr": "{v,SupplierBBAN}",
+    "include_condition": "",
+    "raw_comment": "Basware: Supplier BBAN",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "SupplierBankAccountIBAN",
+    "basware_field": "Supplier IBAN",
+    "value_expr": "{v,SupplierIBAN}",
+    "include_condition": "",
+    "raw_comment": "Basware: Supplier IBAN",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text8",
+    "basware_field": "Division",
+    "value_expr": "{v,Division}",
+    "include_condition": "",
+    "raw_comment": "Basware: Division",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text6",
+    "basware_field": "Additional Data 1",
+    "value_expr": "{v,AdditionalData1}",
+    "include_condition": "",
+    "raw_comment": "Basware: Additional Data 1",
+    "logic_type": "Direct XML Mapping",
+    "description": "Populated from company division and entity-specific additional data configuration."
+  },
+  {
+    "param_name": "Text14",
+    "basware_field": "Supplier Type",
+    "value_expr": "{v,VendorType}",
+    "include_condition": "",
+    "raw_comment": "Basware: Supplier Type",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text59",
+    "basware_field": "Text59",
+    "value_expr": "{v,TCode}",
+    "include_condition": "",
+    "raw_comment": "",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text15",
+    "basware_field": "UWAGA: Text15 w Basware = Tax Code 2",
+    "value_expr": "{v,file_name}",
+    "include_condition": "",
+    "raw_comment": "UWAGA: Text15 w Basware = Tax Code 2",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text30",
+    "basware_field": "Email from Sender",
+    "value_expr": "{v,EmailFromSender}",
+    "include_condition": "",
+    "raw_comment": "Basware: Email from Sender",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text34",
+    "basware_field": "VAT Serial Number",
+    "value_expr": "{v,VATSerialNumber}",
+    "include_condition": "",
+    "raw_comment": "Basware: VAT Serial Number",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text35",
+    "basware_field": "VAT Format Number",
+    "value_expr": "{v,VATFormatNumber}",
+    "include_condition": "",
+    "raw_comment": "Basware: VAT Format Number",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text51",
+    "basware_field": "Text51",
+    "value_expr": "{v,skiprule}",
+    "include_condition": "",
+    "raw_comment": "Basware: Text51",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text37",
+    "basware_field": "Text37",
+    "value_expr": "{v,ScannedIBAN}",
+    "include_condition": "",
+    "raw_comment": "",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  },
+  {
+    "param_name": "Text38",
+    "basware_field": "Text38",
+    "value_expr": "{v,ScannedBBAN}",
+    "include_condition": "",
+    "raw_comment": "",
+    "logic_type": "Direct XML Mapping",
+    "description": "Mapped from invoice variable / XML source according to standard ERP connector rules."
+  }
+];
+
+        function getBadgeClass(category) {
+            switch(category) {
+                case 'Direct XML Mapping': return 'badge-direct';
+                case 'Cascading Fallback': return 'badge-cascade';
+                case 'DB Lookup & Rules': return 'badge-db';
+                case 'System Metadata': return 'badge-sys';
+                default: return 'badge-sys';
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('paramsTableBody');
+            tbody.innerHTML = '';
+            data.forEach((item, index) => {
+                const row = document.createElement('tr');
+                const condHtml = item.include_condition ? `<span class="condition-text">Include Condition: <code>${item.include_condition}</code></span>` : '';
+                const valueHtml = item.value_expr ? `<code>${item.value_expr}</code>` : '<em style="color:#64748b">None / Empty</em>';
+
+                row.innerHTML = `
+                    <td style="color: var(--text-muted);">${index + 1}</td>
+                    <td><strong style="color: var(--text-main); font-size: 1.05rem;">${item.basware_field}</strong></td>
+                    <td><code>${item.param_name}</code></td>
+                    <td><span class="badge ${getBadgeClass(item.logic_type)}">${item.logic_type}</span></td>
+                    <td>${valueHtml}${condHtml}</td>
+                    <td><div class="desc-text">${item.description}</div></td>
+                `;
+                tbody.appendChild(row);
+            });
+            document.getElementById('visibleCount').innerText = data.length;
+        }
+
+        let currentCategory = 'ALL';
+        function filterCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.includes(cat) || (cat === 'ALL' && btn.innerText.includes('All')));
+            });
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = paramsData.filter(item => {
+                const matchesCat = (currentCategory === 'ALL' || item.logic_type === currentCategory);
+                const matchesSearch = item.basware_field.toLowerCase().includes(query) ||
+                                      item.param_name.toLowerCase().includes(query) ||
+                                      item.value_expr.toLowerCase().includes(query) ||
+                                      item.include_condition.toLowerCase().includes(query) ||
+                                      item.description.toLowerCase().includes(query);
+                return matchesCat && matchesSearch;
+            });
+            renderTable(filtered);
+        }
+
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('totalCount').innerText = paramsData.length;
+        renderTable(paramsData);
+    </script>
+</body>
+</html>

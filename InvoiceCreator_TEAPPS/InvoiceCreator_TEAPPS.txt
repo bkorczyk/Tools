@@ -1,0 +1,77 @@
+================================================================================
+DOKUMENTACJA APLIKACJI: GENERATOR FAKTUR TEAPPS 3.0 (FLASK / XML / FTP)
+================================================================================
+
+1. OPIS PROGRAMU
+--------------------------------------------------------------------------------
+Aplikacja webowa oparta na mikro-frameworku Flask służąca do generowania, 
+weryfikacji oraz wysyłki e-faktur w formacie TEAPPSXML 3.0.
+
+Program obsługuje dwa tryby wystawiania dokumentów:
+  - Debit Invoice (Faktura debetowa): Generowana bezpośrednio z danych 
+    formularza nagłówkowego.
+  - Purchase Order Invoice (Faktura na podstawie PO): Tworzona w oparciu 
+    o wczytany plik zamówienia XML (np. Order_Template.xml.bak) z opcją 
+    wyboru konkretnych pozycji Goods Receipt (GR).
+
+Dodatkowo aplikacja umożliwia:
+  - Pobranie wygenerowanego pliku XML na lokalny dysk.
+  - Bezpośrednią, strumieniową wysyłkę gotowej faktury na serwer FTP Basware.
+
+2. WYMAGANIA
+--------------------------------------------------------------------------------
+- Python 3.10 lub nowszy
+- Biblioteki Pythona (pliki zewnętrzne):
+  * Flask
+  * python-dotenv
+- Biblioteki standardowe Pythona:
+  * csv, datetime, ftplib, io, os, re, xml.etree.ElementTree
+
+3. STRUKTURA I KONFIGURACJA (.ENV)
+--------------------------------------------------------------------------------
+Konfiguracja dostępu do serwera FTP przechowywana jest w pliku środowiskowym .env
+po stronie serwera:
+
+  FTP_HOST=ftp.basware.com
+  FTP_USER=twój_login
+  FTP_PASS=twoje_haslo
+  FTP_PORT=21
+  FTP_DIR=/inbound
+
+Mapowanie tagów XML i sekcji faktury definiowane jest w pliku mapping.csv.
+
+4. ZASADA DZIAŁANIA I ENDPOINTY API
+--------------------------------------------------------------------------------
+1. Wczytywanie Zamówień PO:
+   - POST /api/upload: Przetwarza wgrywany plik XML zamówienia.
+   - Tworzy bezpieczne identyfikatory (bez znaków specjalnych/kropek) zapobiegające 
+     błędom wyrenderowania interfejsu użytkownika w JavaScript.
+   - Odczytuje sekcje <OrderRow> oraz podwęzły <GoodsReceipt>.
+
+2. Usuwanie Zamówień:
+   - DELETE /api/delete-order/<order_id>: Usuwa wybrane zamówienie z pamięci sesyjnej.
+
+3. Budowanie i Generowanie XML:
+   - POST /api/generate-xml: Buduje strukturę TEAPPSXML 3.0 i zwraca plik XML 
+     do pobrania przez przeglądarkę.
+
+4. Wysyłka do Basware (FTP):
+   - POST /api/send-to-basware: Generuje strukturę XML bezpośrednio w pamięci RAM 
+     (io.BytesIO) i przesyła strumieniowo (STOR) na serwer FTP bez zapisu na dysku.
+
+5. INSTRUKCJA UŻYCIA
+--------------------------------------------------------------------------------
+a) Uruchomienie aplikacji:
+   python app.py
+   Aplikacja uruchomi się pod adresem http://127.0.0.1:5000/
+
+b) Wystawienie faktury Debit Invoice:
+   1. Upewnij się, że opcja "Invoice Type" w formularzu to "Debit Invoice".
+   2. Wypełnij kwoty brutto oraz VAT.
+   3. Kliknij "Wyślij do Basware (FTP)" lub "Pobierz Fakturę TEAPPS 3.0 (XML)".
+
+c) Wystawienie faktury Purchase Order Invoice:
+   1. Zmień "Invoice Type" na "Purchase Order Invoice".
+   2. W sekcji "Wgrywanie i Wybór Zamówień Zakupowych (PO)" dodaj plik zamówienia XML.
+   3. Zaznacz wybrane pozycje dostaw (GR), z których ma składać się faktura.
+   4. Wygeneruj lub wyślij plik na FTP.

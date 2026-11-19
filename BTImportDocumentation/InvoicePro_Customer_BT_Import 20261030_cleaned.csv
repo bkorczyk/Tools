@@ -1,0 +1,1548 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<erpConnector>
+	<sections>
+		<section name="ImportMain">
+			<section name="ImportInvoice">
+				<section name="loop" loopDataSource="{BT.Properties,FetchTimes}" loopExit="{F,IF(BT.Properties,FetchTimes;=;0)}">
+					<onError name="ErrorHanderGetMessage" onErrorJumpToXPath="//section[@name='ErrorHandler']">
+						<variable name="ResponseInvoiceId"/>
+						<variable name="ResponseResult">False</variable>
+						<method name="GetMessages" jumpToXmlFile="{v,BTObject}" jumpToXPath="//section[@name='GetMessages']">
+							<parameter name="InstanceName">BT</parameter>
+							<parameter name="debug">{v,ObjectDebug}</parameter>
+						</method>
+						<section name="" loopDataSource="BT.Mime">
+							<variable name="ResponseInvoiceId"/>
+							<method name="LoadInvoiceXML">
+								<builtInMethodParameterList name="bw_XML_Input">
+									<parameter name="XMLSource">{BT.Mime,FileName}</parameter>
+									<return name="xmlInvoice"/>
+								</builtInMethodParameterList>
+							</method>
+
+							<variable name="SenderDomain">{F,UPPER(xmlInvoice,"/INVOICE_CENTER/CONTENT_FRAME/SENDER_DOMAIN")}</variable>
+
+							<variable name="DefaultOrigin">2</variable>
+
+							<method name="ResolveOriginFromTEAPPS" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='ResolveOrigin']">
+								<parameter name="XMLSource">xmlInvoice</parameter>
+								<parameter name="debug">{v,ObjectDebug}</parameter>
+								<parameter name="DefaultOrigin">{v,DefaultOrigin}</parameter>
+							</method>
+							<variable name="CompanyNetServiceId">{xmlInvoice,"//RECEIVER/NET_SERVICE_ID"}</variable>
+							<variable name="CompanyNetServiceId" include="{F,IF(v,CompanyNetServiceId;=;&quot;&quot;)}">{xmlInvoice,"//RECEIVER/CUSTOMER_INFORMATION/PARTY_IDENTIFICATION_ID"}</variable>
+							
+
+							  <variable name="AdministrativeSiteID">{F,DBSELECT("SELECT organization_element_id FROM adm_organization_identifier WHERE identifier_value = ?";v,providerconnection;v,CompanyNetServiceId)}</variable>
+ 
+							<variable name="identifierKeyId"/>
+                           
+                            <variable name="identifierKeyId">{F,DBSELECT("select ADM_IDENTIFIER_KEY.identifier_key from ADM_IDENTIFIER_KEY join ADM_ORGANIZATION_IDENTIFIER on
+							ADM_ORGANIZATION_IDENTIFIER.Identifier_key_id=ADM_IDENTIFIER_KEY.ID
+							and ADM_ORGANIZATION_IDENTIFIER.Identifier_value = ?
+							and ADM_ORGANIZATION_IDENTIFIER.ORGANIZATION_ELEMENT_ID= ?";v,providerconnection;v,CompanyNetServiceId;v,AdministrativeSiteID)}</variable>
+
+								
+
+							<variable name="TrelleborgVatNumber">{xmlInvoice,"//RECEIVER/CUSTOMER_INFORMATION/VAT_NUMBER"}</variable>
+
+							<variable name="TrelleborgVatNumber" include="{F,IF(v,TrelleborgVatNumber;=;&quot;&quot;)}">{xmlInvoice,"//ORDERER/CUSTOMER_INFORMATION/VAT_NUMBER"}</variable>
+
+							<variable name="TrelleborgVatNumber" include="{F,IF(v,TrelleborgVatNumber;=;&quot;&quot;)}">{xmlInvoice,"/INVOICE_CENTER/CONTENT_FRAME/INVOICES/INVOICE/HEADER/FREE_TEXT[@TEXT_TYPE='Trelleborg_VAT_number']"}</variable>
+
+							<variable name="CompanyId"/>
+							<variable name="CompanyCode"/>
+
+                            <variable name="CompanyId">{v,AdministrativeSiteID}</variable>
+
+                            <variable name="CompanyId" include="{F,IF(v,CompanyId;=;&quot;&quot;)}">{F,DBSELECT("SELECT ORGANIZATION_ELEMENT_ID FROM ADM_ORGANIZATION_IDENTIFIER WHERE IDENTIFIER_KEY_ID = 'Org_Party_ID' AND IDENTIFIER_VALUE = ?";v,providerconnection;v,CompanyNetServiceId)}</variable>
+                            <variable name="CompanyCode">{F,DBSELECT("SELECT CODE FROM ADM_ORGANIZATION_ELEMENT WHERE ID = ?";v,providerconnection;v,CompanyId)}</variable>
+
+							<variable name="SupplierVatNumber"/>
+							<variable name="SupplierVatNumber">{xmlInvoice,"//PAYEE/CUSTOMER_INFORMATION/VAT_NUMBER"}</variable>
+							<variable name="LocalSupplierTaxID"/>
+							
+
+							<section name="SupplierVatNumberValidation"  include="{F,AND(F,IF(v,CompanyCode;&lt;&gt;;&quot;TPVN&quot;);F,IF(v,CompanyCode;&lt;&gt;;&quot;TSSVN&quot;))}">	
+								<variable name="VATPrefix">{F,LEFT(v,SupplierVatNumber;2)}</variable>
+								<variable name="PrefixCheck">{F,REGEXP_STRING(v,VATPrefix; "[0-9]")}</variable>
+								<variable name="LocalSupplierTaxID" include="{F,IF(F,LEN(v,PrefixCheck);&gt;;0)}">{v,SupplierVatNumber}</variable>
+								<variable name="SupplierVatNumber" include="{F,IF(F,LEN(v,PrefixCheck);&gt;;0)}"/>
+								<variable name="LocalSupplierTaxIDTemp"/>
+								<variable name="LocalSupplierTaxIDTemp" include="{F,EXISTS(xmlInvoice;&quot;//HEADER/FREE_TEXT[@TEXT_TYPE='local_TaxID']&quot;)}">{xmlInvoice,"//HEADER/FREE_TEXT[@TEXT_TYPE='local_TaxID']"}</variable>
+								<variable name="LocalSupplierTaxID" include="{F,IF(v,LocalSupplierTaxIDTemp;&lt;&gt;;&quot;&quot;)}">{v, LocalSupplierTaxIDTemp}</variable>
+								<variable name="LocalSupplierTaxID" include="{F,IF(v,LocalSupplierTaxID;=;&quot;&quot;)}">{xmlInvoice,"//PAYEE/CUSTOMER_INFORMATION/ORGANIZATION_NUMBER"}</variable>
+							</section>
+								
+								<variable name="SupplierVatNumber">{F,REPLACE(v,SupplierVatNumber;"-";"")}</variable>
+								<variable name="SupplierVatNumber">{F,REPLACE(v,SupplierVatNumber;".";"")}</variable>
+								<variable name="SupplierVatNumber">{F,REPLACE(v,SupplierVatNumber;" ";"")}</variable>
+								<variable name="SupplierVatNumber">{F,REPLACE(v,SupplierVatNumber;",";"")}</variable>
+								<variable name="SupplierVatNumber">{F,REPLACE(v,SupplierVatNumber;";";"")}</variable>
+								<variable name="SupplierVatNumber">{F,REPLACE(v,SupplierVatNumber;":";"")}</variable>
+
+							<variable name="InvoiceSourceFromInvoice"/>
+							<variable name="InvoiceSourceFromInvoice" include="{F,EXISTS(xmlInvoice;&quot;//HEADER/HEADER_INFO[TITLE/@INFO_TYPE='BaswareOrigin']/CONTENT&quot;)}">{xmlInvoice,"//HEADER/HEADER_INFO[TITLE/@INFO_TYPE='BaswareOrigin']/CONTENT"}</variable>
+							<variable name="InvoiceSourceFromInvoice2" include="{F,EXISTS(xmlInvoice;&quot;//HEADER/HEADER_INFO[TITLE/@INFO_TYPE='Origin']/CONTENT&quot;)}">{xmlInvoice,"//HEADER/HEADER_INFO[TITLE/@INFO_TYPE='Origin']/CONTENT"}</variable>
+							<variable name="InvoiceSource"/>
+							<variable name="InvoiceSource" include="{F,OR(F,IF(v,InvoiceSourceFromInvoice;=;&quot;330&quot;);F,IF(v,InvoiceSourceFromInvoice;=;&quot;210&quot;);F,IF(v,InvoiceSourceFromInvoice;=;&quot;120&quot;))}">Scanned</variable>
+
+							<variable name="CompanyNameForTrim">{xmlInvoice,"//RECEIVER/CUSTOMER_INFORMATION/CUSTOMER_NAME"}</variable>
+							<variable name="CompanyName">{F,TRIM(v,CompanyNameForTrim)}</variable>
+
+							<variable name="CompanyName"/>
+							<section name="loopCustomer_Name" loopDataSource="xmlInvoice;//RECEIVER/CUSTOMER_INFORMATION/CUSTOMER_NAME">
+								<variable name="CompanyNameForTrim">{xmlInvoice,"."}</variable>
+								<variable name="CompanyNameTrimmed">{F,TRIM(v,CompanyNameForTrim)}</variable>
+								<variable name="CompanyName" include="{F,IF(F,LEN(v,CompanyName);&gt;;0)}">{v,CompanyName} {v,CompanyNameTrimmed}</variable>
+								<variable name="CompanyName" include="{F,IF(F,LEN(v,CompanyName);=;0)}">{v,CompanyNameTrimmed}</variable>
+							</section>
+							<variable name="SupplierDeterminationId"/>
+							<variable name="SupplierID"/>
+							<variable name="CompanyEntityConfigurations">{F,DBSELECT("select listagg(IDFKEY.IDENTIFIER_KEY,';') as EnabledEntityConfigurations from ADM_ORGANIZATION_IDENTIFIER IDF LEFT JOIN ADM_IDENTIFIER_KEY IDFKEY ON IDFKEY.ID=IDF.IDENTIFIER_KEY_ID WHERE IDF.ORGANIZATION_ELEMENT_ID=? AND IDFKEY.IDENTIFIER_KEY like 'C_%'";v,providerconnection;v,CompanyId)}</variable>
+							<variable name="CompanyEntityValidations">{F,DBSELECT("select listagg(IDFKEY.IDENTIFIER_KEY,';') as EnabledEntityValidations from ADM_ORGANIZATION_IDENTIFIER IDF LEFT JOIN ADM_IDENTIFIER_KEY IDFKEY ON IDFKEY.ID=IDF.IDENTIFIER_KEY_ID WHERE IDF.ORGANIZATION_ELEMENT_ID=? AND IDFKEY.IDENTIFIER_KEY like 'V_%'";v,providerconnection;v,CompanyId)}</variable>
+							<variable name="IntegrationID"/>
+							<variable name="SupplierCount">0</variable>
+							<variable name="TaxCount">0</variable>
+							<variable name="SupplierNetServiceId"/>
+							<variable name="SupplierBBAN"/>
+							<variable name="SupplierIBAN"/>
+							<variable name="HeaderTaxCode"/>
+							<variable name="HeaderTaxCodeTemp"/>
+							<variable name="HeaderItemTaxCode"/>
+							<variable name="TaxCodeSelectionType">0</variable>
+							<variable name="CompNameFromInvoice"/>
+							<variable name="CompNameFromInvoice" include="{F,EXISTS(xmlInvoice;&quot;//HEADER/FREE_TEXT[@TEXT_TYPE='company name from invoice']&quot;)}">{xmlInvoice,"//HEADER/FREE_TEXT[@TEXT_TYPE='company name from invoice']"}</variable>
+							<variable name="CompNameFromInvoice" include="{F,IF(v,CompNameFromInvoice;=;&quot;&quot;)}">{F,EVAL(v,Origin;=;&quot;2&quot;;v,CompanyName;v,CompNameFromInvoice)}</variable>
+							<variable name="EmailFromSender"/>
+							<variable name="EmailFromSender" include="{F,EXISTS(xmlInvoice;&quot;//HEADER/HEADER_INFO[TITLE/@INFO_TYPE='ScanCaptureSentFrom']/CONTENT&quot;)}">{xmlInvoice,"//HEADER/HEADER_INFO[TITLE/@INFO_TYPE='ScanCaptureSentFrom']/CONTENT"}</variable>
+							<variable name="VATSerialNumber"/>
+							<variable name="VATSerialNumber" include="{F,EXISTS(xmlInvoice;&quot;//HEADER/TEXT34&quot;)}">{xmlInvoice,"//HEADER/TEXT34"}</variable>
+							<variable name="VATFormatNumber"/>
+							<variable name="VATFormatNumber" include="{F,EXISTS(xmlInvoice;&quot;//HEADER/TEXT35&quot;)}">{xmlInvoice,"//HEADER/TEXT35"}</variable>
+							<variable name="Num2">1</variable>
+							<variable name="DeliveryAddress">0</variable>
+							<variable name="DeliveryAddress" include="{F,EXISTS(xmlInvoice;&quot;//HEADER/FREE_TEXT[@TEXT_TYPE='DeliveryAddress']&quot;)}">{F,EVAL(xmlInvoice,"//HEADER/FREE_TEXT[@TEXT_TYPE='DeliveryAddress']";=;&quot;&quot;;0;1)}</variable>
+							<variable name="SupplierNetServiceId">{xmlInvoice,"//PAYEE/CUSTOMER_INFORMATION/VAT_NUMBER"}</variable>
+							<variable name="SupplierNetServiceId" include="{F,IF(v,SupplierNetServiceId;=;&quot;&quot;)}">{xmlInvoice,"//PAYEE/NET_SERVICE_ID"}</variable>
+							<variable name="SupplierNetServiceId" include="{F,IF(v,SupplierNetServiceId;=;&quot;999999999&quot;)}"/>
+							<variable name="OrderNumber"/>
+							<variable name="RemoveOrderNumber">false</variable>
+							<section name="CheckRemoveOrderNumber" include="{F,OR(F,IF(v,CompanyCode;=;&quot;TAB&quot;);F,IF(v,CompanyCode;=;&quot;HAL7&quot;);F,IF(v,CompanyCode;=;&quot;HAL8&quot;);F,IF(v,CompanyCode;=;&quot;THAB&quot;);F,IF(v,CompanyCode;=;&quot;TREASURY&quot;);F,IF(v,CompanyCode;=;&quot;TIND&quot;))}">
+								<variable name="RemoveOrderNumber">true</variable>
+							</section>
+							<section name="GetHeaderOrderNumber" include="{F,IF(v,RemoveOrderNumber;=;&quot;false&quot;)}">
+								<variable name="HeaderCOOrderNumber">{xmlInvoice,"//HEADER/ORDER_INFORMATION[@ORDER_TYPE='CO']/ORDER_NUMBER"}</variable>
+								<variable name="HeaderNonVNOrderNumber">{xmlInvoice,"//HEADER/ORDER_INFORMATION[@ORDER_TYPE!='VN']/ORDER_NUMBER"}</variable>
+								<variable name="HeaderVNOrderNumber">{xmlInvoice,"//HEADER/ORDER_INFORMATION[@ORDER_TYPE='VN']/ORDER_NUMBER"}</variable>
+								<variable name="OrderNumber">{v,HeaderCOOrderNumber}</variable>
+								<variable name="OrderNumber" include="{F,IF(v,OrderNumber;=;&quot;&quot;)}">{v,HeaderNonVNOrderNumber}</variable>
+								<variable name="OrderNumber" include="{F,IF(v,OrderNumber;=;&quot;&quot;)}">{v,HeaderVNOrderNumber}</variable>
+								<variable name="OrderNumber" include="{F,IF(v,OrderNumber;=;&quot;&quot;)}">{xmlInvoice,"//HEADER/INVOICE_ORDER_NUMBER"}</variable>
+								<variable name="OrderNumber">{F,REPLACE(v,OrderNumber;".";",")}</variable>
+								<variable name="OrderNumber">{F,REPLACE(v,OrderNumber;",,";",")}</variable>
+							</section>
+
+							<section name="OrderNumberSuffix" include="{F,OR(F,IF(v,CompanyCode;=;&quot;TSSUS52&quot;);F,IF(v,CompanyCode;=;&quot;TSSUS262&quot;))}">
+								<variable name="OrderNumber">{F,LEFT(v,OrderNumber;8)}</variable>
+							</section>
+
+							<section name="OrderNumberRowToHeader2" include="{F,AND(F,IF(v,OrderNumber;=;&quot;&quot;);F,OR(F,IF(v,CompanyCode;=;&quot;TSSUS52&quot;);F,IF(v,CompanyCode;=;&quot;TSSUS262&quot;)))}">
+								<variable name="RowOrderNumbers"/>
+								<section name="loopLineItems" loopDataSource="xmlInvoice;/INVOICE_CENTER/CONTENT_FRAME/INVOICES/INVOICE/ROWS/ROW">
+									<section name="GetRowOrderNumber" include="{F,EXISTS(xmlInvoice;&quot;ORDER_INFORMATION/ORDER_NUMBER&quot;)}">
+										<variable name="CurrentRowOrderNumber">{F,LEFT(xmlInvoice,"ORDER_INFORMATION/ORDER_NUMBER";8)}</variable>
+										<section name="GetRowOrderNumber" include="{F,EXISTS(xmlInvoice;&quot;ORDER_NUMBER&quot;)}">
+											<variable name="CurrentRowOrderNumber" include="{F,IF(v,CurrentRowOrderNumber;=;&quot;&quot;)}">{F,LEFT(xmlInvoice,"ORDER_NUMBER";8)}</variable>
+										</section>
+										<variable name="CurrentRowOrderNumber">{F,REPLACE(v,CurrentRowOrderNumber;"'";"''")}</variable>										
+										<variable name="RowOrderNumbers" include="{F,AND(F,IF(F,LEN(v,CurrentRowOrderNumber);&gt;;0);F,IF(F,REGEXP_POSITION(v,RowOrderNumbers;v,CurrentRowOrderNumber);=;0))}">{F,COMBINE(v,RowOrderNumbers;v,CurrentRowOrderNumber;",")}</variable>
+									</section>
+								</section>
+								<variable name="RowOrderNumbers" include="{F,IF(F,LEN(v,RowOrderNumbers);&gt;;0)}">{F,LEFT(v,RowOrderNumbers;F,CALC(F,LEN(v,RowOrderNumbers);"-";1))}</variable>
+								<variable name="OrderNumber" include="{F,IF(F,LEN(v,RowOrderNumbers);&gt;;0)}">{v,RowOrderNumbers}</variable>
+							</section>
+
+							<section name="OrderNumberRowToHeader" include="{F,IF(v,OrderNumber;=;&quot;&quot;)}">
+								<variable name="RowOrderNumbers"/>
+								<section name="loopLineItems" loopDataSource="xmlInvoice;/INVOICE_CENTER/CONTENT_FRAME/INVOICES/INVOICE/ROWS/ROW">
+									<section name="GetRowOrderNumber" include="{F,EXISTS(xmlInvoice;&quot;ORDER_INFORMATION/ORDER_NUMBER&quot;)}">
+										<variable name="CurrentRowOrderNumber">{xmlInvoice,"ORDER_INFORMATION/ORDER_NUMBER"}</variable>
+										<section name="GetRowOrderNumber" include="{F,EXISTS(xmlInvoice;&quot;ORDER_NUMBER&quot;)}">
+											<variable name="CurrentRowOrderNumber" include="{F,IF(v,CurrentRowOrderNumber;=;&quot;&quot;)}">{xmlInvoice,"ORDER_NUMBER"}</variable>
+										</section>
+										<variable name="CurrentRowOrderNumber">{F,REPLACE(v,CurrentRowOrderNumber;"'";"''")}</variable>
+										<variable name="RowOrderNumbers" include="{F,AND(F,IF(F,LEN(v,CurrentRowOrderNumber);&gt;;0);F,IF(F,REGEXP_POSITION(v,RowOrderNumbers;v,CurrentRowOrderNumber);=;0))}">{F,COMBINE(v,RowOrderNumbers;v,CurrentRowOrderNumber;",")}</variable>
+									</section>
+								</section>
+								<variable name="RowOrderNumbers" include="{F,IF(F,LEN(v,RowOrderNumbers);&gt;;0)}">{F,LEFT(v,RowOrderNumbers;F,CALC(F,LEN(v,RowOrderNumbers);"-";1))}</variable>
+								<variable name="OrderNumber" include="{F,IF(F,LEN(v,RowOrderNumbers);&gt;;0)}">{v,RowOrderNumbers}</variable>
+							</section>
+
+							<section name="FindSupplierSCCode" include="{F,IF(v,SupplierId;=;&quot;&quot;)}">
+								<variable name="SupplierCode">{xmlInvoice,"//PAYEE/CUSTOMER_INFORMATION/CUSTOMER_ID"}</variable>
+								<section name="FindSupplierOnCode" include="{F,AND(F,IF(v,SupplierCode;&lt;&gt;;&quot;&quot;);F,IF(v,SupplierId;=;&quot;&quot;))}">
+									<variable name="SupplierCount">{F,DBSELECT("SELECT COUNT(*) FROM ADM_SUPPLIER WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? AND CODE = ?";v,providerconnection;v,CompanyId;v,SupplierCode)}</variable>
+									<variable name="SupplierId" include="{F,IF(v,SupplierCount;=;1)}">{F,DBSELECT("SELECT ADM_SUPPLIER.ID FROM ADM_SUPPLIER WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? AND CODE = ?";v,providerconnection;v,CompanyId;v,SupplierCode)}</variable>
+								</section>
+							</section>
+
+								<section name="SupplierVATSmartPDF" include="{F,AND(F,IF(v,SupplierVatNumber;=;&quot;&quot;);F,OR(F,IF(v,InvoiceSourceFromInvoice2;=;403);F,IF(v,InvoiceSourceFromInvoice2;=;402)))}">
+									<variable name="SupplierVATDefined">{F,DBSELECT("SELECT count(id) FROM EXT_INV_LIST_17 WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? and Text_1 = 'SupplierDefaultVAT' and Text_2 = (select code from adm_supplier where id= ?)";v,providerconnection;v,CompanyId;v,SupplierId)}</variable>
+												
+									<section name="SupplierVATIsDefined" include="{F,IF(v,SupplierVATDefined;=;1)}">
+										<variable name="SupplierVatNumber">{F,DBSELECT("SELECT TEXT_3 FROM EXT_INV_LIST_17 WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? and Text_1 = 'SupplierDefaultVAT' and Text_2 = (select code from adm_supplier where id= ?)";v,providerconnection;v,CompanyId;v,SupplierId)}</variable>
+									</section>
+								</section>
+							
+							<section name="FindSupplierByNetServiceId" include="{F,IF(v,SupplierId;=;&quot;&quot;)}">
+								<variable name="SupplierCount" include="{F,IF(v,SupplierNetServiceId;&lt;&gt;;&quot;&quot;)}">{F,DBSELECT("SELECT COUNT(*) FROM ADM_SUPPLIER INNER JOIN ADM_SUPPLIER_IDENTIFIER ON ADM_SUPPLIER.ID = SUPPLIER_ID AND IDENTIFIER_KEY_ID = 'Sup_Party_ID' WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? AND IDENTIFIER_VALUE = ?";v,providerconnection;v,CompanyId;v,SupplierNetServiceId)}</variable>
+								<variable name="SupplierId" include="{F,IF(v,SupplierCount;=;1)}">{F,DBSELECT("SELECT ADM_SUPPLIER.ID FROM ADM_SUPPLIER INNER JOIN ADM_SUPPLIER_IDENTIFIER ON ADM_SUPPLIER.ID = SUPPLIER_ID AND IDENTIFIER_KEY_ID = 'Sup_Party_ID' WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? AND IDENTIFIER_VALUE = ?";v,providerconnection;v,CompanyId;v,SupplierNetServiceId)}</variable>
+							</section>
+
+							<section name="FindSupplierBySupplierVatNumber" include="{F,IF(v,SupplierId;=;&quot;&quot;)}">
+								<variable name="SupplierCount" include="{F,IF(v,SupplierVatNumber;&lt;&gt;;&quot;&quot;)}">{F,DBSELECT("SELECT COUNT(*) FROM ADM_SUPPLIER INNER JOIN ADM_SUPPLIER_IDENTIFIER ON ADM_SUPPLIER.ID = SUPPLIER_ID AND IDENTIFIER_KEY_ID = 'Sup_Party_ID' WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? AND IDENTIFIER_VALUE = ?";v,providerconnection;v,CompanyId;v,SupplierVatNumber)}</variable>
+								<variable name="SupplierId" include="{F,IF(v,SupplierCount;=;1)}">{F,DBSELECT("SELECT ADM_SUPPLIER.ID FROM ADM_SUPPLIER INNER JOIN ADM_SUPPLIER_IDENTIFIER ON ADM_SUPPLIER.ID = SUPPLIER_ID AND IDENTIFIER_KEY_ID = 'Sup_Party_ID' WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? AND IDENTIFIER_VALUE = ?";v,providerconnection;v,CompanyId;v,SupplierVatNumber)}</variable>
+							</section>
+
+							<section name="FindSupplierByLocalTaxId" include="{F,IF(v,SupplierId;=;&quot;&quot;)}">
+								<variable name="SupplierCount" include="{F,IF(v,LocalSupplierTaxID;&lt;&gt;;&quot;&quot;)}">{F,DBSELECT("SELECT COUNT(*) FROM ADM_SUPPLIER SUP INNER JOIN ADM_SUPPLIER_IDENTIFIER SUPIDF ON SUP.ID = SUPIDF.SUPPLIER_ID INNER JOIN ADM_IDENTIFIER_KEY KEYDEF ON KEYDEF.ID = SUPIDF.IDENTIFIER_KEY_ID WHERE SUP.is_Active = 1 AND SUP.ADMINISTRATIVE_SITE_ID = ? AND SUPIDF.IDENTIFIER_VALUE = ? AND KEYDEF.IDENTIFIER_KEY = 'Supplier_Local_Tax_ID' AND SUP.PAYMENT_DENIED = 0";v,providerconnection;v,CompanyId;v,LocalSupplierTaxID)}</variable>
+								<variable name="SupplierId" include="{F,IF(v,SupplierCount;=;1)}">{F,DBSELECT("SELECT SUP.ID FROM ADM_SUPPLIER SUP INNER JOIN ADM_SUPPLIER_IDENTIFIER SUPIDF ON SUP.ID = SUPIDF.SUPPLIER_ID INNER JOIN ADM_IDENTIFIER_KEY KEYDEF ON KEYDEF.ID = SUPIDF.IDENTIFIER_KEY_ID WHERE SUP.is_Active = 1 AND SUP.ADMINISTRATIVE_SITE_ID = ? AND SUPIDF.IDENTIFIER_VALUE = ? AND KEYDEF.IDENTIFIER_KEY = 'Supplier_Local_Tax_ID' AND SUP.PAYMENT_DENIED = 0";v,providerconnection;v,CompanyId;v,LocalSupplierTaxID)}</variable>
+							</section>
+
+							<section name="FindSupplierByCurrency" include="{F,IF(v,SupplierId;=;&quot;&quot;)}">
+								<variable name="InvoiceCurrencyCode">{xmlInvoice,"//HEADER/CURRENCY/CODE"}</variable>
+								<variable name="SupplierCount" include="{F,IF(v,SupplierNetServiceId;&lt;&gt;;&quot;&quot;)}">{F,DBSELECT("SELECT COUNT(*) FROM ADM_SUPPLIER INNER JOIN ADM_SUPPLIER_IDENTIFIER ON ADM_SUPPLIER.ID = SUPPLIER_ID AND IDENTIFIER_KEY_ID = 'Sup_Party_ID' WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? AND IDENTIFIER_VALUE = ? AND CURRENCY_CODE=?";v,providerconnection;v,CompanyId;v,SupplierNetServiceId;v,InvoiceCurrencyCode)}</variable>
+								<variable name="SupplierId" include="{F,IF(v,SupplierCount;=;1)}">{F,DBSELECT("SELECT ADM_SUPPLIER.ID FROM ADM_SUPPLIER INNER JOIN ADM_SUPPLIER_IDENTIFIER ON ADM_SUPPLIER.ID = SUPPLIER_ID AND IDENTIFIER_KEY_ID = 'Sup_Party_ID' WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? AND IDENTIFIER_VALUE = ? AND CURRENCY_CODE=?";v,providerconnection;v,CompanyId;v,SupplierNetServiceId;v,InvoiceCurrencyCode)}</variable>
+							</section>
+
+							<section name="FindSupplierBankInfo" include="{F,IF(v,SupplierId;=;&quot;&quot;)}">
+								<variable name="SupplierIBAN">{xmlInvoice,"//PAYEE/BANKS/IBAN_ACCOUNT_NUMBER"}</variable>
+								<variable name="SupplierBBAN">{xmlInvoice,"//PAYEE/BANKS/BANK_ACCOUNT_NUMBER"}</variable>
+								<variable name="SupplierBBANsign">{xmlInvoice,"//PAYEE/BANKS/BANK_ACCOUNT_NUMBER"}</variable>
+								<variable name="SupplierBBAN">{F,REPLACE(v,SupplierBBANsign;"-";"")}</variable>
+								<variable name="SupplierSWIFT">{xmlInvoice,"//PAYEE/BANKS/SWIFT_CODE"}</variable>
+								<variable name="SupplierName">{xmlInvoice,"//PAYEE/CUSTOMER_INFORMATION/CUSTOMER_NAME"}</variable>
+								<section name="FindSupplierOnBBAN" include="{F,AND(F,IF(v,SupplierBBAN;&lt;&gt;;&quot;&quot;);F,IF(v,SupplierId;=;&quot;&quot;))}">
+									<variable name="SupplierCount">{F,DBSELECT("SELECT COUNT(*) FROM ADM_SUPPLIER INNER JOIN ADM_SUPPLIER_BANK_ACCOUNT ON ADM_SUPPLIER.ID = SUPPLIER_ID WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? AND BBAN = ?";v,providerconnection;v,CompanyId;v,SupplierBBAN)}</variable>
+									<variable name="SupplierId" include="{F,IF(v,SupplierCount;=;1)}">{F,DBSELECT("SELECT ADM_SUPPLIER.ID FROM ADM_SUPPLIER INNER JOIN ADM_SUPPLIER_BANK_ACCOUNT ON ADM_SUPPLIER.ID = SUPPLIER_ID WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? AND BBAN = ?";v,providerconnection;v,CompanyId;v,SupplierBBAN)}</variable>
+								</section>
+
+								<section name="FindSupplierOnIBAN" include="{F,AND(F,IF(v,SupplierIBAN;&lt;&gt;;&quot;&quot;);F,IF(v,SupplierId;=;&quot;&quot;))}">
+									<variable name="SupplierCount">{F,DBSELECT("SELECT COUNT(*) FROM ADM_SUPPLIER INNER JOIN ADM_SUPPLIER_BANK_ACCOUNT ON ADM_SUPPLIER.ID = SUPPLIER_ID WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? AND IBAN = ?";v,providerconnection;v,CompanyId;v,SupplierIBAN)}</variable>
+									<variable name="SupplierId" include="{F,IF(v,SupplierCount;=;1)}">{F,DBSELECT("SELECT ADM_SUPPLIER.ID FROM ADM_SUPPLIER INNER JOIN ADM_SUPPLIER_BANK_ACCOUNT ON ADM_SUPPLIER.ID = SUPPLIER_ID WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? AND IBAN = ?";v,providerconnection;v,CompanyId;v,SupplierIBAN)}</variable>
+								</section>
+							</section>
+
+							<variable name="SCSupplierCode">{xmlInvoice,"//PAYEE/CUSTOMER_INFORMATION/CUSTOMER_ID"}</variable>
+							<variable name="LogisticSupplierCount">{F,DBSELECT("SELECT COUNT(*) FROM EXT_INV_LIST_14 WHERE ADMINISTRATIVE_SITE_ID = ? AND TEXT_1 = ?";v,providerconnection;v,CompanyId;v,SCSupplierCode)}</variable>
+							<variable name="OrderSupplierId"/>
+							<section name="FindOrderData" include="{F,IF(v,OrderNumber;&lt;&gt;;&quot;&quot;)}">
+								<clearTable>Orderlist</clearTable>
+								<method name="SplitOrders">
+									<builtInMethodParameterList name="bw_string_functions">
+										<parameter name="operation">split</parameter>
+										<parameter name="sourcestring">{v,OrderNumber}</parameter>
+										<parameter name="separator">,</parameter>
+										<return name="Orderlist"/>
+									</builtInMethodParameterList>
+								</method>
+								<section name="LoopOrderNumbers" loopDataSource="Orderlist">
+									<variable name="CurrentOrder">{Orderlist,Orderlist}</variable>
+									<section name="ContinueFindSupplier" include="{F,OR(F,IF(v,SupplierId;=;&quot;&quot;);F,IF(v,CompanyCode;=;&quot;TSSUS52&quot;))}">
+										<variable name="SupplierCount">{F,DBSELECT("SELECT COUNT(*) FROM OM_ORDER_DATA WHERE ORDER_NUMBER = ? AND COMPANY_ID = ?";v,providerconnection;v,CurrentOrder;v,CompanyId)}</variable>
+										<variable name="OrderSupplierId" include="{F,AND(F,IF(v,SupplierCount;=;1);F,IF(v,SupplierId;=;&quot;&quot;))}">{F,DBSELECT("SELECT INVOICING_SUPPLIER_ID FROM OM_ORDER_DATA WHERE ORDER_NUMBER = ? AND COMPANY_ID = ?";v,providerconnection;v,CurrentOrder;v,CompanyId)}</variable>
+										<section name="LogisticSupplierFilter" include="{F,IF(v,LogisticSupplierCount;=;&quot;0&quot;)}">
+											<variable name="SupplierId" include="{F,IF(v,SupplierCount;=;1)}">{F,DBSELECT("SELECT INVOICING_SUPPLIER_ID FROM OM_ORDER_DATA WHERE ORDER_NUMBER = ? AND COMPANY_ID = ?";v,providerconnection;v,CurrentOrder;v,CompanyId)}</variable>
+											<section name="SupplierVATSmartPDF" include="{F,AND(F,IF(v,SupplierVatNumber;=;&quot;&quot;);F,OR(F,IF(v,InvoiceSourceFromInvoice2;=;403);F,IF(v,InvoiceSourceFromInvoice2;=;402)))}">
+												<variable name="SupplierVATDefined">{F,DBSELECT("SELECT count(id) FROM EXT_INV_LIST_17 WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? and Text_1 = 'SupplierDefaultVAT' and Text_2 = (SELECT CODE FROM ADM_SUPPLIER WHERE ID= ?)";v,providerconnection;v,CompanyId;v,SupplierId)}</variable>
+												<section name="SupplierVATIsDefined" include="{F,IF(v,SupplierVATDefined;=;1)}">
+													<variable name="SupplierVatNumber">{F,DBSELECT("SELECT TEXT_3 FROM EXT_INV_LIST_17 WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? and Text_1 = 'SupplierDefaultVAT' and Text_2 = (SELECT CODE FROM ADM_SUPPLIER WHERE ID= ?)";v,providerconnection;v,CompanyId;v,SupplierId)}</variable>
+												</section>
+											</section>
+										</section>
+									</section>
+									<variable name="TaxCount">{F,DBSELECT("SELECT CASE WHEN COUNT(*) = 0 THEN 0 WHEN NOT MAX(TAX_CODE) = MIN(TAX_CODE) THEN 2 ELSE 1 END FROM OM_ORDER_DATA INNER JOIN OM_ORDER_ROW ON OM_ORDER_DATA.ID = OM_ORDER_ROW.ORDER_ID WHERE OM_ORDER_DATA.ORDER_NUMBER = ? AND COMPANY_ID = ? AND OM_ORDER_ROW.DELETED = 0";v,providerconnection;v,CurrentOrder;v,CompanyId)}</variable>
+									<variable name="HeaderTaxCodeTemp" include="{F,IF(v,TaxCount;=;1)}">{F,DBSELECT("SELECT MAX(TAX_CODE) FROM OM_ORDER_DATA INNER JOIN OM_ORDER_ROW ON OM_ORDER_DATA.ID = OM_ORDER_ROW.ORDER_ID WHERE OM_ORDER_DATA.ORDER_NUMBER = ? AND COMPANY_ID = ? AND OM_ORDER_ROW.DELETED = 0";v,providerconnection;v,CurrentOrder;v,CompanyId)}</variable>
+									<variable name="HeaderTaxCode" include="{F,IF(v,HeaderTaxCode;=;&quot;&quot;)}">{v,HeaderTaxCodeTemp}</variable>
+									<variable name="TaxCodeSelectionType" include="{F,IF(v,TaxCount;&gt;;1)}">9</variable>
+									<variable name="TaxCodeSelectionType" include="{F,IF(v,HeaderTaxCodeTemp;&lt;&gt;;v,HeaderTaxCode)}">9</variable>
+									<variable name="TaxCodeSelectionType" include="{F,AND(F,IF(v,TaxCodeSelectionType;=;0);F,IF(v,HeaderTaxCode;&lt;&gt;;&quot;&quot;))}">1</variable>
+								</section>
+
+								<variable name="HeaderTaxCodeTempBUSADE" include="{F,IF(v,CompanyCode;=;&quot;BUSADE020&quot;)}">{v,HeaderTaxCode}</variable>
+								<variable name="HeaderTaxCode" include="{F,IF(v,TaxCodeSelectionType;=;9)}"/>
+								<section name="CheckTaxCodeBUSADE" include="{F,IF(v,CompanyCode;=;&quot;BUSADE020&quot;)}">
+
+									<variable name="HeaderTaxCode">{v,HeaderTaxCodeTempBUSADE}</variable>
+									<variable name="HeaderTaxCode" include="{F,IF(v,HeaderTaxCodeTempBUSADE;=;&quot;DE21&quot;)}">DE22</variable>
+									<variable name="HeaderTaxCode" include="{F,IF(v,HeaderTaxCodeTempBUSADE;=;&quot;DES6&quot;)}">DES9</variable>
+									<variable name="HeaderTaxCode" include="{F,IF(v,HeaderTaxCodeTempBUSADE;=;&quot;DEW6&quot;)}">DEW9</variable>
+									<variable name="HeaderTaxCode" include="{F,AND(F,IF(v,SupplierVatNumber;=;&quot;GB918415616&quot;);F,OR(F,IF(v,TrelleborgVatNumber;=;&quot;DE119553041&quot;);F,IF(v,TrelleborgVatNumber;=;&quot;FR50444237929&quot;)))}">DEW0</variable>
+									<variable name="TaxCodeSelectionType">1</variable>
+								</section>
+							</section>
+							<variable name="CleanLogisticPO">false</variable>
+							<section name="CleanLogisticPOSection" include="{F,AND(F,IF(v,LogisticSupplierCount;&gt;;&quot;0&quot;);F,IF(v,OrderSupplierId;&lt;&gt;;v,SupplierId))}">
+								<variable name="CleanLogisticPO">true</variable>
+								<variable name="OrderNumber"/>
+							</section>
+
+							<section name="Fetch_non_PO_data" include="{F,IF(v,OrderNumber;=;&quot;&quot;)}">
+								<variable name="HeaderTaxCodeTemp" include="{F,IF(v,SupplierId;&lt;&gt;;&quot;&quot;)}">{F,DBSELECT("SELECT VALUE FROM ADM_SUPPLIER_ADDITIONAL_DATA WHERE NAME = 'TaxCodes' AND SUPPLIER_ID = ?";v,providerconnection;v,SupplierId)}</variable>
+								<section name="HeaderTaxCodeFound" include="{F,IF(v,HeaderTaxCodeTemp;&lt;&gt;;&quot;&quot;)}">
+									<variable name="HeaderTaxCode">{v,HeaderTaxCodeTemp}</variable>
+									<variable name="TaxCodeSelectionType">2</variable>
+								</section>
+							</section>
+							<variable name="HeaderTaxPercentage"/>
+							<variable name="HeaderTaxPercentage" include="{F,IF(v,HeaderTaxCode;&lt;&gt;;&quot;&quot;)}">{F,DBSELECT("SELECT TAX_PERCENT FROM ADM_TAX_CODE WHERE CODE = ? AND ADMINISTRATIVE_SITE_ID = ?";v,providerconnection;v,HeaderTaxCode;v,CompanyId)}</variable>
+							<variable name="HeaderTaxPercentage" include="{F,IF(v,HeaderTaxPercentage;=;&quot;&quot;)}">0</variable>
+							<variable name="HeaderTaxPercentage" include="{F,IF(v,HeaderTaxCode;=;&quot;&quot;)}">0</variable>
+							<variable name="ContractNumber">{xmlInvoice,"//HEADER/CONTRACT_INFORMATION/CONTRACT_NUMBER"}</variable>
+							<variable name="BuyerReference">{xmlInvoice,"//HEADER/BUYER_REFERENCE"}</variable>
+							<variable name="ContactReference">{xmlInvoice,"//RECEIVER/CUSTOMER_INFORMATION/CONTACT_INFORMATION/CONTACT_PERSON"}</variable>
+							<variable name="ContactPerson">{xmlInvoice,"//ORDERER/CUSTOMER_INFORMATION/CONTACT_INFORMATION/CONTACT_PERSON"}</variable>
+							<variable name="FirstInvoiceNumber">{xmlInvoice,"//HEADER/INVOICE_ID"}</variable>
+							<variable name="InvoiceNumber">{F,REPLACE(v,FirstInvoiceNumber;"&#8208;";"-")}</variable>
+							<variable name="InvoiceNumber" include="{F,IF(v,InvoiceNumber;=;&quot;NOT_FOUND&quot;)}">{xmlInvoice,"//PAYEE/DETAILS_OF_PAYMENT/FI_PAYMENT_REFERENCE"}</variable>
+							<section name="TIPINTSSInvoiceNumber" include="{F,IF(v,CompanyCode;=;&quot;TIPINTSS&quot;)}">
+								<variable name="InvoiceNumber">{F,REPLACE(v,FirstInvoiceNumber;"/";"-")}</variable>
+							</section>
+							<section name="FourthShiftInvoiceNumberReplace" include="{F,OR(F,IF(v,CompanyCode;=;&quot;BUSAITL&quot;);F,IF(v,CompanyCode;=;&quot;BUSAITT&quot;);F,IF(v,CompanyCode;=;&quot;TSSSILCH&quot;);F,IF(v,CompanyCode;=;&quot;TSSFR&quot;);F,IF(v,CompanyCode;=;&quot;TSSSILBG&quot;);F,IF(v,CompanyCode;=;&quot;TSSUK11&quot;);F,IF(v,CompanyCode;=;&quot;TIPINTSS&quot;);F,IF(v,CompanyCode;=;&quot;TSSUK10&quot;);F,IF(v,CompanyCode;=;&quot;TSSUK12&quot;);F,IF(v,CompanyCode;=;&quot;TSSMT&quot;);F,IF(v,CompanyCode;=;&quot;TSSUK13&quot;);F,IF(v,CompanyCode;=;&quot;TSSCH&quot;);F,IF(v,CompanyCode;=;&quot;BUSAITM&quot;))}">
+								<variable name="InvoiceNumber">{F,REPLACE(v,InvoiceNumber;"+";"")}</variable>
+								<variable name="InvoiceNumber">{F,REPLACE(v,InvoiceNumber;"_";"")}</variable>
+								<variable name="InvoiceNumber">{F,REPLACE(v,InvoiceNumber;"&#0038;";"")}</variable>
+								<variable name="InvoiceNumber">{F,REPLACE(v,InvoiceNumber;"/";"")}</variable>
+								<variable name="InvoiceNumber">{F,REPLACE(v,InvoiceNumber;".";"")}</variable>
+							</section>
+							<variable name="CurrencyCode">{xmlInvoice,"//HEADER/CURRENCY/CODE"}</variable>
+							<variable name="ExchangeRate">{xmlInvoice,"//HEADER/CURRENCY/RATE"}</variable>
+							<variable name="DeductibleVAT"/>
+							<variable name="DeductibleVAT" include="{F,EXISTS(xmlInvoice;&quot;//HEADER/FREE_TEXT[@TEXT_TYPE='DeductibleVAT']&quot;)}">{xmlInvoice,"//HEADER/FREE_TEXT[@TEXT_TYPE='DeductibleVAT']"}</variable>
+							<variable name="HeaderTaxSumSign">+</variable>
+							<variable name="HeaderTaxSumSign" include="{F,EXISTS(xmlInvoice;&quot;//SUMMARY/VAT_TOTAL/AMOUNT/@SIGN&quot;)}">{xmlInvoice,"//SUMMARY/VAT_TOTAL/AMOUNT/@SIGN"}</variable>
+							<variable name="HeaderTaxSum">0</variable>
+							<variable name="HeaderTaxSum">{xmlInvoice,"/INVOICE_CENTER/CONTENT_FRAME/INVOICES/INVOICE/SUMMARY/VAT_TOTAL/AMOUNT"}</variable>
+							<variable name="HeaderTaxSum">{F,EVAL(v,HeaderTaxSumSign;=;"-";F,CALC("-1";*;F,TONUMBER(v,HeaderTaxSum;"."));v,HeaderTaxSum)}</variable>
+							<variable name="HeaderTaxSum" include="{F,NOT(F,OR(F,IF(v,DeductibleVAT;=;&quot;&quot;);F,IF(v,DeductibleVAT;=;&quot;0.00&quot;)))}">{v,DeductibleVAT}</variable>
+							<variable name="HeaderTaxSum" include="{F,NOT(F,OR(F,IF(v,DeductibleVAT;=;&quot;&quot;);F,IF(v,DeductibleVAT;=;&quot;0.00&quot;)))}">{F,EVAL(v,HeaderTaxSumSign;=;"-";F,CALC("-1";*;F,TONUMBER(v,HeaderTaxSum;"."));v,HeaderTaxSum)}</variable>
+							<variable name="HeaderTaxSum" include="{F,OR(F,IF(v,CompanyCode;=;&quot;TWSA&quot;);F,IF(v,CompanyCode;=;&quot;TWSMITCA&quot;))}">0</variable>
+							<variable name="HeaderTaxSum" include="{F,INSTR(v,CompanyEntityConfigurations;&quot;C_108&quot;;TRUE;FALSE)}">0</variable>
+							<variable name="HeaderTaxSum2" include="{F,INSTR(v,CompanyEntityValidations;&quot;V_051&quot;;TRUE;FALSE)}">{xmlInvoice,"/INVOICE_CENTER/CONTENT_FRAME/INVOICES/INVOICE/SUMMARY/INVOICE_TOTAL_IN_OTHER_CURRENCY/AMOUNT"}</variable>
+							<variable name="FreightSumSign">+</variable>
+							<variable name="FreightSumSign" include="{F,EXISTS(xmlInvoice;&quot;//SUMMARY/CARGO/AMOUNT/@SIGN&quot;)}">{xmlInvoice,"//SUMMARY/CARGO/AMOUNT/@SIGN"}</variable>
+							<variable name="FreightSum">0</variable>
+							<variable name="FreightSum">{xmlInvoice,"/INVOICE_CENTER/CONTENT_FRAME/INVOICES/INVOICE/SUMMARY/CARGO/AMOUNT"}</variable>
+							<variable name="FreightSum">{F,EVAL(v,FreightSumSign;=;"-";F,CALC("-1";*;F,TONUMBER(v,FreightSum;"."));F,TONUMBER(F,EVAL(v,FreightSum;=;"";0;v,FreightSum);"."))}</variable>
+							<variable name="SurChargeSign">+</variable>
+							<variable name="SurChargeSign" include="{F,EXISTS(xmlInvoice;&quot;//SUMMARY/CARGO/AMOUNT/@SIGN&quot;)}">{xmlInvoice,"//SUMMARY/SURCHARGE_TOTAL/AMOUNT/@SIGN"}</variable>
+							<variable name="SurCharge">0</variable>
+							<variable name="SurCharge">{xmlInvoice,"/INVOICE_CENTER/CONTENT_FRAME/INVOICES/INVOICE/SUMMARY/SURCHARGE_TOTAL/AMOUNT"}</variable>
+							<variable name="SurCharge">{F,EVAL(v,SurChargeSign;=;"-";F,CALC("-1";*;F,TONUMBER(v,SurCharge;"."));F,TONUMBER(F,EVAL(v,SurCharge;=;"";0;v,SurCharge);"."))}</variable>
+							<variable name="DeliveryExtraSign">+</variable>
+							<variable name="DeliveryExtraSign" include="{F,EXISTS(xmlInvoice;&quot;//SUMMARY/DELIVERY_EXTRA/AMOUNT/@SIGN&quot;)}">{xmlInvoice,"//SUMMARY/DELIVERY_EXTRA/AMOUNT/@SIGN"}</variable>
+							<variable name="DeliveryExtra">0</variable>
+							<variable name="DeliveryExtra">{xmlInvoice,"/INVOICE_CENTER/CONTENT_FRAME/INVOICES/INVOICE/SUMMARY/DELIVERY_EXTRA"}</variable>
+							<variable name="DeliveryExtra">{F,EVAL(v,DeliveryExtraSign;=;"-";F,CALC("-1";*;F,TONUMBER(v,DeliveryExtra;"."));F,TONUMBER(F,EVAL(v,DeliveryExtra;=;"";0;v,DeliveryExtra);"."))}</variable>
+							<variable name="Rounding">0</variable>
+							<variable name="Rounding">{xmlInvoice,"/INVOICE_CENTER/CONTENT_FRAME/INVOICES/INVOICE/SUMMARY/ROUNDINGS"}</variable>
+							<variable name="HeaderGrossSumSign">+</variable>
+							<variable name="HeaderGrossSumSign" include="{F,EXISTS(xmlInvoice;&quot;//SUMMARY/INVOICE_TOTAL/AMOUNT/@SIGN&quot;)}">{xmlInvoice,"//SUMMARY/INVOICE_TOTAL/AMOUNT/@SIGN"}</variable>
+							<variable name="HeaderSumGross">0</variable>
+							<variable name="HeaderSumGross" include="{F,EXISTS(xmlInvoice;&quot;//SUMMARY/INVOICE_TOTAL/AMOUNT&quot;)}">{xmlInvoice,"//SUMMARY/INVOICE_TOTAL/AMOUNT[@VAT='INCLUDED']"}</variable>
+							<variable name="HeaderSumGross">{F,EVAL(v,HeaderGrossSumSign;=;"-";F,CALC("-1";*;F,TONUMBER(v,HeaderSumGross;"."));v,HeaderSumGross)}</variable>
+							<variable name="HeaderNetSumSign">+</variable>
+							<variable name="HeaderNetSumSign" include="{F,EXISTS(xmlInvoice;&quot;//SUMMARY/INVOICE_TOTAL/AMOUNT/@SIGN&quot;)}">{xmlInvoice,"//SUMMARY/INVOICE_TOTAL/AMOUNT/@SIGN"}</variable>
+							<variable name="HeaderSumNet">0</variable>
+							<variable name="HeaderSumNet" include="{F,EXISTS(xmlInvoice;&quot;//SUMMARY/INVOICE_TOTAL/AMOUNT&quot;)}">{xmlInvoice,"//SUMMARY/INVOICE_TOTAL/AMOUNT[@VAT='EXCLUDED']"}</variable>
+							<variable name="HeaderSumNet">{F,EVAL(v,HeaderNetSumSign;=;"-";F,CALC("-1";*;F,TONUMBER(v,HeaderSumNet;"."));v,HeaderSumNet)}</variable>
+                            <variable name="skiprule"/>
+                            <variable name="payableamount"/>
+                            <variable name="payableamount" include="{F,IF(F,EXISTS(xmlInvoice; &quot;//SUMMARY/INVOICE_TOTAL/AMOUNT[@VAT='INCLUDED']&quot;);=;1)}">{xmlInvoice,"/SUMMARY/INVOICE_TOTAL/AMOUNT[@VAT='INCLUDED']"}</variable>
+                            <variable name="payableamount" include="{F,AND(F,IF(F,EXISTS(xmlInvoice; &quot;//SUMMARY/INVOICE_TOTAL/AMOUNT[@VAT='EXCLUDED']&quot;);=;1);F,IF(v,payableamount;=;&quot;&quot;))}">{xmlInvoice,"/SUMMARY/INVOICE_TOTAL/AMOUNT[@VAT='EXCLUDED']"}</variable>
+                            <variable name="skiprule" include="{F,IF(v,payableamount;&lt;&gt;;&quot;&quot;)}">{F,EVAL(F,TONUMBER(v,payableamount;".");=;0;"P";"")}</variable>
+                            <variable name="skiprule">{F,COMBINE(v,skiprule;F,EVAL(xmlInvoice,"//HEADER/HEADER_INFO/CONTENT";=;"RESERVE";"R";F,EVAL(xmlInvoice,"//HEADER/HEADER_INFO/CONTENT";=;"RETENUE";"R";F,EVAL(xmlInvoice,"//HEADER/HEADER_INFO/CONTENT";=;"GARANTIE";"R";""))))}</variable>
+                            <variable name="skiprule">{F,COMBINE(v,skiprule;F,EVAL(F,EXISTS(xmlInvoice;"//HEADER/HEADER_INFO[TITLE/@INFO_TYPE='AAB']");=;1;"D";""))}</variable>
+
+							<variable name="InvoiceDate"/>
+							<section name="InvoiceDate" include="{F,EXISTS(xmlInvoice;&quot;//INVOICE_DATE&quot;)}">
+								<variable name="sInvoiceDate">{F,COMBINE(xmlInvoice,"//INVOICE_DATE/DATE/CENTURY";xmlInvoice,"//INVOICE_DATE/DATE/DECADE_AND_YEAR";"-";xmlInvoice,"//INVOICE_DATE/DATE/MONTH","!00";"-";xmlInvoice,"//INVOICE_DATE/DATE/DAY","!00")}</variable>
+								<variable name="isInvoiceDate">{F,ISDATE(v,sInvoiceDate;"yyyy-MM-dd")}</variable>
+								<variable name="InvoiceDate" include="{v,isInvoiceDate}">{F,TODATE(v,sInvoiceDate;"yyyy-MM-dd"),"yyyy-MM-dd"}</variable>
+							</section>
+							<variable name="DueDate">{F,NOW(),"yyyy-MM-dd"}</variable>
+							<variable name="isDueDate"/>
+							<section name="DueDate" include="{F,EXISTS(xmlInvoice;&quot;//DUE_DATE&quot;)}">
+								<variable name="sDueDate">{F,COMBINE(xmlInvoice,"//DUE_DATE/DATE/CENTURY";xmlInvoice,"//DUE_DATE/DATE/DECADE_AND_YEAR";"-";xmlInvoice,"//DUE_DATE/DATE/MONTH","!00";"-";xmlInvoice,"//DUE_DATE/DATE/DAY","!00")}</variable>
+								<variable name="isDueDate">{F,ISDATE(v,sDueDate;"yyyy-MM-dd")}</variable>
+								<variable name="DueDate" include="{v,isDueDate}">{F,TODATE(v,sDueDate;"yyyy-MM-dd"),"yyyy-MM-dd"}</variable>
+							</section>
+							<variable name="ReferenceNumber">{xmlInvoice,"//PAYEE/DETAILS_OF_PAYMENT/FI_PAYMENT_REFERENCE"}</variable>
+							<variable name="ReferenceNumber" include="{F,EXISTS(xmlInvoice;&quot;//HEADER/HEADER_INFO[TITLE/@INFO_TYPE='BW-0000020']/CONTENT&quot;)}">{xmlInvoice,"//HEADER/HEADER_INFO[TITLE/@INFO_TYPE='BW-0000020']/CONTENT"}</variable>
+							<variable name="ReferenceNumber" include="{F,IF(v,CompanyCode;=;&quot;BUSADE&quot;)}"/>
+							<variable name="ScanServiceId_BLOCK_ID">{xmlInvoice,"/INVOICE_CENTER/CONTENT_FRAME/BLOCK_ID"}</variable>
+							<variable name="SendToProcessSW">True</variable>
+							<variable name="PaymentPlanReference"/>
+							<variable name="PaymentPlanReferenceTemp"/>
+							<variable name="PaymentPlanReferenceTemp">{xmlInvoice,"//HEADER/CONTRACT_INFORMATION/CONTRACT_NUMBER"}</variable>
+							<variable name="SupplierCode">{F,DBSELECT("select s.code from ADM_SUPPLIER s left join ADM_SUPPLIER_identifier i on s.id=i.supplier_id left join ADM_ORGANIZATION_ELEMENT o on s.administrative_site_id=o.id where i.identifier_value=? and o.code=?";v,providerconnection;v,SupplierID;v,CompanyCode)}</variable>
+							<variable name="SupplierCode" include="{F,IF(v,SupplierCode;=;&quot;&quot;)}">{v,SCSupplierCode}</variable>
+							<section name="DefaultContractNumber">
+								<variable name="DefaultContractNumberCount">{F,DBSELECT("SELECT count(*) FROM EXT_inv_list_17 l  left join ADM_ORGANIZATION_ELEMENT o on l.administrative_site_id=o.id where l.TEXT_1='SupplierDefaultContract' and l.TEXT_2=? and o.code=?";v,providerconnection;v,SupplierCode;v,CompanyCode)}</variable>
+								<variable name="SupplierDefaultContractNumber">{F,DBSELECT("SELECT l.TEXT_3 FROM EXT_inv_list_17 l  left join ADM_ORGANIZATION_ELEMENT o on l.administrative_site_id=o.id where l.TEXT_1='SupplierDefaultContract' and l.TEXT_2=? and o.code=?";v,providerconnection;v,SupplierCode;v,CompanyCode)}</variable>
+								<variable name="ContractNumber" include="{F,IF(v,DefaultContractNumberCount;&gt;;0)}">{v,SupplierDefaultContractNumber}</variable>
+							</section>
+							<variable name="IsDefaultSpendPlanReference">{F,DBSELECT("SELECT count(*) FROM PP_PAY_PLAN WHERE SECONDARY_STATUS = '70' AND NUM7 = 1 AND COMPANY_CODE = ? AND Supplier_code=?";v,providerconnection;v,CompanyCode;v,SupplierCode)}</variable>
+							<variable name="PaymentPlanReference" include="{F,IF(v,IsDefaultSpendPlanReference;=;1)}">{F,DBSELECT("SELECT PAYMENT_PLAN_REFERENCE FROM PP_PAY_PLAN WHERE SECONDARY_STATUS = '70' AND NUM7 = 1 AND COMPANY_CODE = ? AND Supplier_code=?";v,providerconnection;v,CompanyCode;v,SupplierCode)}</variable>
+							<variable name="PayPlanCountRef">{F,DBSELECT("SELECT count(*) FROM PP_PAY_PLAN WHERE SECONDARY_STATUS = '70' AND PAYMENT_PLAN_REFERENCE = ? AND COMPANY_CODE = ?";v,providerconnection;v,BuyerReference;v,CompanyCode)}</variable>
+							<variable name="PaymentPlanReference" include="{F,IF(v,PayPlanCountRef;&gt;;0)}">{v,BuyerReference}</variable>
+							<variable name="PayPlanCount">{F,DBSELECT("SELECT count(*) FROM PP_PAY_PLAN WHERE SECONDARY_STATUS = '70' AND PAYMENT_PLAN_REFERENCE = ? AND COMPANY_CODE = ?";v,providerconnection;v,PaymentPlanReferenceTemp;v,CompanyCode)}</variable>
+							<variable name="PaymentPlanReference" include="{F,IF(v,PayPlanCount;&gt;;0)}">{v,PaymentPlanReferenceTemp}</variable>
+							<variable name="PayPlanCount">{F,DBSELECT("SELECT count(*) FROM PP_PAY_PLAN WHERE SECONDARY_STATUS = '70' AND PAYMENT_PLAN_REFERENCE = ? AND COMPANY_CODE = ?";v,providerconnection;v,ContractNumber;v,CompanyCode)}</variable>
+							<variable name="PaymentPlanReference" include="{F,IF(v,PayPlanCount;&gt;;0)}">{v,ContractNumber}</variable>
+							<variable name="HeaderItemTaxCode" include="{F,OR(F,IF(v,CompanyCode;=;&quot;TOCAB&quot;);F,IF(v,CompanyCode;=;&quot;TIND&quot;))}">G</variable>
+							<variable name="KeyWords">{xmlInvoice,"//SUMMARY/VAT_SUMMARY/VAT_DESCRIPTION"}</variable>
+							<variable name="DeliveryDate"/>
+							<variable name="DeliveryDateFromInvoice"/>
+							<variable name="isInvoiceDeliveryDate"/>
+							<variable name="PreviousDeliveryDate"/>
+							<variable name="CurrentDeliveryDate"/>
+							<variable name="LatestDeliveryDate"/>
+							<section name="HandleScannedInvoice" include="{F,IF(v,InvoiceSource;=;&quot;Scanned&quot;)}">
+								<variable name="DeliveryDateFromInvoice" include="{F,EXISTS(xmlInvoice;&quot;//HEADER/FREE_TEXT[@TEXT_TYPE='DeliveryDate']&quot;)}">{xmlInvoice,"//HEADER/FREE_TEXT[@TEXT_TYPE='DeliveryDate']"}</variable>
+								
+								<variable name="DeliveryDateFromInvoice">{F,REPLACE(v,DeliveryDateFromInvoice;"-";"/")}</variable>
+								<section name="DeliveryDateFromInvoice" include="{F,IF(v,DeliveryDateFromInvoice;&lt;&gt;;&quot;&quot;)}">
+									<clearTable>DeliveryDateList</clearTable>
+									<variable name="DeliveryDateOK">True</variable>
+									<variable name="DeliveryDateReallyOk">True</variable>
+									<method name="SplitDeliveryDate">
+										<builtInMethodParameterList name="bw_string_functions">
+											<parameter name="operation">split</parameter>
+											<parameter name="sourcestring">{v,DeliveryDateFromInvoice}</parameter>
+											<parameter name="separator">;</parameter>
+											<return name="DeliveryDateList"/>
+										</builtInMethodParameterList>
+									</method>
+									<section name="CheckDeliveryDate" loopDataSource="DeliveryDateList">
+										<variable name="CurrentDeliveryDate">{DeliveryDateList,DeliveryDateList}</variable>
+										<section name="CompareDeliveryDates" include="{F,IF(v,PreviousDeliveryDate;&lt;&gt;;&quot;&quot;)}">
+											<variable name="CurrentDeliveryDate_YYMM">{F,COMBINE(F,CSV(v,CurrentDeliveryDate;"1";"/");F,CSV(v,CurrentDeliveryDate;"2";"/"))}</variable>
+											<variable name="PreviousDeliveryDate_YYMM">{F,COMBINE(F,CSV(v,PreviousDeliveryDate;"1";"/");F,CSV(v,PreviousDeliveryDate;"2";"/"))}</variable>
+											<variable name="CurrentDeliveryDate_DD">{F,CSV(v,CurrentDeliveryDate;"3";"/")}</variable>
+											<variable name="PreviousDeliveryDate_DD">{F,CSV(v,PreviousDeliveryDate;"3";"/")}</variable>
+											<variable name="DeliveryDateOk" include="{F,IF(v,CurrentDeliveryDate_YYMM;&lt;&gt;;v,PreviousDeliveryDate_YYMM)}">False</variable>
+											<variable name="LatestDeliveryDate" include="{F,IF(v,CurrentDeliveryDate_DD;&gt;=;v,PreviousDeliveryDate_DD)}">{v,CurrentDeliveryDate}</variable>
+										</section>
+										<variable name="PreviousDeliveryDate">{v,CurrentDeliveryDate}</variable>
+										<variable name="LatestDeliveryDate" include="{F,IF(v,LatestDeliveryDate;=;&quot;&quot;)}">{v,CurrentDeliveryDate}</variable>
+										<variable name="DeliveryDateReallyOk" include="{F,IF(v,DeliveryDateOk;=;&quot;False&quot;)}">False</variable>
+									</section>
+									
+									
+									<section name="compare1" include="{F,IF(v,DeliveryDateReallyOk;=;&quot;False&quot;)}">
+										<variable name="LatestDeliveryDate"/>
+									</section>
+									
+								</section>
+								<section name="DeliveryDateFormat" include="{F,IF(v,LatestDeliveryDate;&lt;&gt;;&quot;&quot;)}">
+									<variable name="DeliveryDate">{F,COMBINE(F,CSV(v,LatestDeliveryDate;"1";"/");"-";F,CSV(v,LatestDeliveryDate;"2";"/");"-";F,CSV(v,LatestDeliveryDate;"3";"/"))}</variable>
+									<variable name="isInvoiceDeliveryDate">{F,ISDATE(v,DeliveryDate;"yyyy-MM-dd")}</variable>
+								</section>
+								
+								<section name="DeliveryDateFormat_PO_invoices" include="{F,OR(F,IF(v,isInvoiceDeliveryDate;=;&quot;&quot;);F,IF(v,isInvoiceDeliveryDate;=;&quot;False&quot;))}">
+									<variable name="DeliveryDate"/>
+									<variable name="sInvoiceDeliveryDate"/>
+									<variable name="isInvoiceDeliveryDate"/>
+									<variable name="sInvoiceDeliveryDate">{F,EVAL(F,IF(v,OrderNumber;&lt;&gt;;&quot;&quot;);=;True;v,InvoiceDate;v,DeliveryDate)}</variable>
+									<variable name="isInvoiceDeliveryDate">{F,ISDATE(v,sInvoiceDeliveryDate;"yyyy-MM-dd")}</variable>
+									<variable name="DeliveryDate" include="{v,isInvoiceDeliveryDate}">{F,TODATE(v,sInvoiceDeliveryDate;"yyyy-MM-dd"),"yyyy-MM-dd"}</variable>
+								</section>
+								
+							</section>
+							<section name="HandleEInvoice" include="{F,IF(v,InvoiceSource;&lt;&gt;;&quot;Scanned&quot;)}">
+								<variable name="HeaderDeliveryDate"/>
+								<variable name="DeliveryDateOK">True</variable>
+								<variable name="DeliveryDateReallyOk">True</variable>
+								<section name="HeaderDeliveryDate" include="{F,EXISTS(xmlInvoice;&quot;//HEADER/DELIVERY_DATE&quot;)}">
+									<variable name="sHeaderDeliveryDate">{F,COMBINE(xmlInvoice,"//HEADER/DELIVERY_DATE/DATE/CENTURY";xmlInvoice,"//HEADER/DELIVERY_DATE/DATE/DECADE_AND_YEAR";"-";xmlInvoice,"//HEADER/DELIVERY_DATE/DATE/MONTH","!00";"-";xmlInvoice,"//HEADER/DELIVERY_DATE/DATE/DAY","!00")}</variable>
+									<variable name="isDeliveryDate">{F,ISDATE(v,sHeaderDeliveryDate;"yyyy-MM-dd")}</variable>
+									<variable name="HeaderDeliveryDate" include="{v,isDeliveryDate}">{F,TODATE(v,sHeaderDeliveryDate;"yyyy-MM-dd"),"yyyy-MM-dd"}</variable>
+								</section>
+								<variable name="PreviousDeliveryDate" include="{F,IF(v,HeaderDeliveryDate;&lt;&gt;;&quot;&quot;)}">{v,HeaderDeliveryDate}</variable>
+								<variable name="LatestDeliveryDate" include="{F,IF(v,HeaderDeliveryDate;&lt;&gt;;&quot;&quot;)}">{v,HeaderDeliveryDate}</variable>
+								<section name="loopLineItems" loopDataSource="xmlInvoice;/INVOICE_CENTER/CONTENT_FRAME/INVOICES/INVOICE/ROWS/ROW">
+									<section name="CurrentDeliveryDate" include="{F,EXISTS(xmlInvoice;&quot;ARTICLE/DELIVERY_DATE&quot;)}">
+										<variable name="sCurrentDeliveryDate">{F,COMBINE(xmlInvoice,"ARTICLE/DELIVERY_DATE/DATE/CENTURY";xmlInvoice,"ARTICLE/DELIVERY_DATE/DATE/DECADE_AND_YEAR";"-";xmlInvoice,"ARTICLE/DELIVERY_DATE/DATE/MONTH","!00";"-";xmlInvoice,"ARTICLE/DELIVERY_DATE/DATE/DAY","!00")}</variable>
+										<variable name="isDeliveryDate">{F,ISDATE(v,sCurrentDeliveryDate;"yyyy-MM-dd")}</variable>
+										<variable name="CurrentDeliveryDate" include="{v,isDeliveryDate}">{F,TODATE(v,sCurrentDeliveryDate;"yyyy-MM-dd"),"yyyy-MM-dd"}</variable>
+									</section>
+									<section name="CompareDeliveryDates" include="{F,AND(F,IF(v,PreviousDeliveryDate;&lt;&gt;;&quot;&quot;);F,IF(v,CurrentDeliveryDate;&lt;&gt;;&quot;&quot;))}">
+										<variable name="CurrentDeliveryDate_YYMM">{F,COMBINE(F,CSV(v,CurrentDeliveryDate;"1";"-");F,CSV(v,CurrentDeliveryDate;"2";"-"))}</variable>
+										<variable name="PreviousDeliveryDate_YYMM">{F,COMBINE(F,CSV(v,PreviousDeliveryDate;"1";"-");F,CSV(v,PreviousDeliveryDate;"2";"-"))}</variable>
+										<variable name="CurrentDeliveryDate_DD">{F,CSV(v,CurrentDeliveryDate;"3";"-")}</variable>
+										<variable name="PreviousDeliveryDate_DD">{F,CSV(v,PreviousDeliveryDate;"3";"-")}</variable>
+										<variable name="DeliveryDateOk" include="{F,IF(v,CurrentDeliveryDate_YYMM;&lt;&gt;;v,PreviousDeliveryDate_YYMM)}">False</variable>
+										<variable name="LatestDeliveryDate" include="{F,IF(v,CurrentDeliveryDate_DD;&gt;=;v,PreviousDeliveryDate_DD)}">{v,CurrentDeliveryDate}</variable>
+									</section>
+									
+									<section name="one_row_with_date" include="{F,AND(F,IF(v,LatestDeliveryDate;=;&quot;&quot;);F,IF(v,CurrentDeliveryDate;&lt;&gt;;&quot;&quot;))}">
+										<variable name="LatestDeliveryDate">{v,CurrentDeliveryDate}</variable>
+									</section>
+									
+									<variable name="PreviousDeliveryDate">{v,LatestDeliveryDate}</variable>
+									<variable name="DeliveryDateReallyOk" include="{F,IF(v,DeliveryDateOk;=;&quot;False&quot;)}">False</variable>
+								</section>
+								
+								
+								<section name="compare1" include="{F,IF(v,DeliveryDateReallyOk;=;&quot;False&quot;)}">
+									<variable name="LatestDeliveryDate"/>
+								</section>
+								
+								<section name="DeliveryDateFormat" include="{F,IF(v,LatestDeliveryDate;&lt;&gt;;&quot;&quot;)}">
+									<variable name="DeliveryDate">{v,LatestDeliveryDate}</variable>
+									<variable name="isInvoiceDeliveryDate">{F,ISDATE(v,DeliveryDate;"yyyy-MM-dd")}</variable>
+								</section>
+								
+								<section name="DeliveryDateFormat_PO_invoices" include="{F,OR(F,IF(v,isInvoiceDeliveryDate;=;&quot;&quot;);F,IF(v,isInvoiceDeliveryDate;=;&quot;False&quot;))}">
+									<variable name="DeliveryDate"/>
+									<variable name="sInvoiceDeliveryDate"/>
+									<variable name="isInvoiceDeliveryDate"/>
+									<variable name="sInvoiceDeliveryDate">{F,EVAL(F,IF(v,OrderNumber;&lt;&gt;;&quot;&quot;);=;True;v,InvoiceDate;v,DeliveryDate)}</variable>
+									<variable name="isInvoiceDeliveryDate">{F,ISDATE(v,sInvoiceDeliveryDate;"yyyy-MM-dd")}</variable>
+									<variable name="DeliveryDate" include="{v,isInvoiceDeliveryDate}">{F,TODATE(v,sInvoiceDeliveryDate;"yyyy-MM-dd"),"yyyy-MM-dd"}</variable>
+								</section>
+								
+							</section>
+							
+							
+							<variable name="Date2">{F,NOW(),"yyyy-MM-dd"}</variable>
+							<section name="SCReportTool" include="{F,IF(v,Origin;=;4)}">
+								
+								<variable name="DateTemp">{F,LEFT(v,ScanServiceId_BLOCK_ID;8)}</variable>
+								
+								<variable name="isDate1">{F,ISDATE(v,DateTemp;"yyyyMMdd")}</variable>
+								
+								
+								<variable name="DateTemp" include="{v,isDate1}">{F,DBSELECT("SELECT TO_CHAR(TO_DATE(?, 'YYYYMMDD'),'yyyy-MM-dd') FROM dual";v,providerconnection;v,DateTemp)}</variable>
+								
+								<variable name="isDate2">{F,ISDATE(v,DateTemp;"yyyy-MM-dd")}</variable>
+								<variable name="Date2" include="{v,isDate2}">{F,TODATE(v,DateTemp;"yyyy-MM-dd"),"yyyy-MM-dd"}</variable>
+							</section>
+							
+							<clearTable>Orders_Count</clearTable>
+							<variable name="SplitPONumber">{F,REPLACE(v,OrderNumber;",";"','")}</variable>
+							<variable name="BoundVariableChar">@</variable>
+							<variable name="BoundVariableChar" include="{F,IF(F,LEFT(v,dataprovider;6);=;&quot;Oracle&quot;)}">:</variable>
+							<method name="CheckIfPOExistInDB2">
+								<builtInMethodParameterList name="bw_db_functions" driver="provider">
+									<parameter name="tablename">Orders_Count</parameter>
+									<parameter name="connectionstring">{v,connstr}</parameter>
+									<parameter name="dataprovider">{v,dataprovider}</parameter>
+									<parameter name="assemblyname">{v,assemblyname}</parameter>
+									<parameter name="prefix">{v,BoundVariableChar}</parameter>
+									<parameter name="command">SELECT COUNT(*) as OrderNumberExist FROM OM_ORDER_DATA WHERE ORDER_NUMBER in ('{v,SplitPONumber}') and COMPANY_ID = '{v,CompanyId}'</parameter>
+								</builtInMethodParameterList>
+							</method>
+							<variable name="OrderNumberExist" include="{F,IF(Orders_Count,OrderNumberExist;&gt;;0)}">1</variable>
+							<variable name="OrderNumberExist" include="{F,IF(Orders_Count,OrderNumberExist;=;0)}">0</variable>
+							
+							<variable name="POImportValidationCount">{F,DBSELECT("SELECT COUNT(*) FROM EXT_INV_LIST_9 WHERE ADMINISTRATIVE_SITE_ID = ? AND TEXT_1 = 'POIMPORT_VALIDATION' AND TEXT_3 = 'TRUE'";v,providerconnection;v,CompanyId)}</variable>
+							<variable name="POImportValidation">0</variable>
+							<variable name="POImportValidation" include="{F,AND(F,IF(Orders_Count,OrderNumberExist;=;0);F,IF(v,POImportValidationCount;&gt;;0))}">1</variable>
+							
+							
+							
+							<section name="InvoiceMoveToBUSAPLX" include="{F,AND(F,IF(v,SupplierId;=;&quot;&quot;);F,IF(v,CompanyCode;=;&quot;BUSAPL&quot;);F,OR(F,IF(v,InvoiceSourceFromInvoice2;=;101);F,IF(v,InvoiceSourceFromInvoice2;=;105)))}">
+								<variable name="TargetCompanyCode">BUSAPLX</variable>
+								<variable name="CompanyId">{F,DBSELECT("SELECT ID FROM ADM_ORGANIZATION_ELEMENT WHERE CODE = ?";v,providerconnection;v,TargetCompanyCode)}</variable>
+								<variable name="CompanyNetServiceId">{F,DBSELECT("SELECT IDENTIFIER_VALUE FROM ADM_ORGANIZATION_IDENTIFIER WHERE IDENTIFIER_KEY_ID = 'Org_Party_ID' AND ORGANIZATION_ELEMENT_ID = ?";v,providerconnection;v,CompanyId)}</variable>
+								<variable name="CompanyCode">{v,TargetCompanyCode}</variable>
+							</section>
+							
+							
+							<variable name="InvoiceType"/>
+							<method name="resolveInvoiceType" jumpToXmlFile="{v,TemplateBTImportResolveInvoiceType}" jumpToXPath="//section[@name='BTResolveInvoiceType']">
+							</method>
+							
+							
+							<variable name="POInvoiceTaxCodeFromSupplier">{F,DBSELECT("SELECT org.CODE FROM ADM_IDENTIFIER_KEY key join ADM_ORGANIZATION_IDENTIFIER orgel on orgel.IDENTIFIER_KEY_ID=key.ID join ADM_ORGANIZATION_ELEMENT org on org.ID=orgel.ORGANIZATION_ELEMENT_ID where key.IDENTIFIER_KEY='C_103' and org.ID= ?";v,providerconnection;v,CompanyId)}</variable>
+							<section name="Fetch_tax_code_PO_invoice" include="{F,AND(F,OR(F,IF(F,LEFT(v,InvoiceType;2);=;&quot;03&quot;);F,IF(F,LEFT(v,InvoiceType;2);=;&quot;05&quot;));F,IF(v,CompanyCode;=;v,POInvoiceTaxCodeFromSupplier))}">
+								<variable name="HeaderTaxCodeTemp" include="{F,IF(v,SupplierId;&lt;&gt;;&quot;&quot;)}">{F,DBSELECT("SELECT VALUE FROM ADM_SUPPLIER_ADDITIONAL_DATA WHERE NAME = 'TaxCodes' AND SUPPLIER_ID = ?";v,providerconnection;v,SupplierId)}</variable>
+								<section name="HeaderTaxCodeFound" include="{F,IF(v,HeaderTaxCodeTemp;&lt;&gt;;&quot;&quot;)}">
+									<variable name="HeaderTaxCode">{v,HeaderTaxCodeTemp}</variable>
+									<variable name="TaxCodeSelectionType">2</variable>
+								</section>
+							</section>
+							
+							
+							<section name="FindSupplierInList17" include="{F,IF(v,SupplierId;&lt;&gt;;&quot;&quot;)}">
+								<variable name="SupplierInvoiceType_SqL">SELECT ext.TEXT_3 FROM EXT_INV_LIST_17 ext 
+								JOIN ADM_SUPPLIER sup on sup.ADMINISTRATIVE_SITE_ID=ext.ADMINISTRATIVE_SITE_ID AND ext.TEXT_2=sup.CODE
+								WHERE ext.ADMINISTRATIVE_SITE_ID = '{v,CompanyId}' and ext.TEXT_1 = 'SupplierInvType' and sup.ID = '{v,SupplierId}'</variable>
+								<variable name="SupplierInvoiceType">{F,DBSELECT(v,SupplierInvoiceType_SqL;v,providerconnection)}</variable>
+								<section name="SetInvoiceType" include="{F,IF(v,SupplierInvoiceType;&lt;&gt;;&quot;&quot;)}">
+									<variable name="InvoiceType">{F,COMBINE(v,SupplierInvoiceType;v,CompanyCode)}</variable>
+								</section>
+								
+								<section name="Fetch_non_PO_data" include="{F,OR(F,IF(F,LEFT(v,InvoiceType;2);=;&quot;01&quot;);F,IF(F,LEFT(v,InvoiceType;2);=;&quot;02&quot;))}">
+									<variable name="HeaderTaxCodeTemp" include="{F,IF(v,SupplierId;&lt;&gt;;&quot;&quot;)}">{F,DBSELECT("SELECT VALUE FROM ADM_SUPPLIER_ADDITIONAL_DATA WHERE NAME = 'TaxCodes' AND SUPPLIER_ID = ?";v,providerconnection;v,SupplierId)}</variable>
+									<section name="HeaderTaxCodeFound" include="{F,IF(v,HeaderTaxCodeTemp;&lt;&gt;;&quot;&quot;)}">
+										<variable name="HeaderTaxCode">{v,HeaderTaxCodeTemp}</variable>
+										<variable name="TaxCodeSelectionType">2</variable>
+									</section>
+								</section>
+								
+							</section>
+							
+							
+							<variable name="Division">{xmlInvoice,"/INVOICE_CENTER/CONTENT_FRAME/INVOICES/INVOICE/HEADER/FREE_TEXT[@TEXT_TYPE='Division']"}</variable>
+							
+							
+							
+							<section name="TCSUSTaxCode" include="{F,IF(v,InvoiceType;=;&quot;01-DE-TCSUS&quot;)}">
+								<variable name="HeaderTaxCode" include="{F,IF(v,Division;=;&quot;Rutherfordton&quot;)}">I1-NC</variable>
+								<variable name="HeaderTaxCode" include="{F,IF(v,Division;=;&quot;Monson&quot;)}">I1-MA</variable>
+								<variable name="HeaderTaxCode" include="{F,IF(v,Division;=;&quot;New Haven&quot;)}">I1-CT</variable>
+								<variable name="HeaderTaxCode" include="{F,IF(v,Division;=;&quot;Forest City&quot;)}">I1-NC</variable>
+							</section>
+							
+							<section name="TCORPTaxCode" include="{F,IF(v,InvoiceType;=;&quot;01-DE-TCORP&quot;)}">
+								<variable name="HeaderTaxCode">I0-MI</variable>
+							</section>
+							
+							<section name="TOBUSTaxCode" include="{F,IF(v,InvoiceType;=;&quot;01-DE-TOBUS&quot;)}">
+								<variable name="HeaderTaxCode">I1-MA</variable>
+							</section>
+							
+							
+							<section name="GUTTUSTaxCode" include="{F,IF(v,InvoiceType;=;&quot;01-DE-GUTTUS&quot;)}">
+								<variable name="HeaderTaxCode">DefaultTax</variable>
+							</section>
+							
+							
+							<variable name="AdditionalData1"/>
+
+							<variable name="AdditionalData1" include="{F,IF(v,CompanyCode;=;&quot;WHEAB&quot;)}">001</variable>
+							
+							<variable name="AdditionalData1" include="{F,OR(F,IF(v,InvoiceType;=;&quot;01-DE-TWSD&quot;);F,IF(v,InvoiceType;=;&quot;02-CR-TWSD&quot;))}">701</variable>
+							<variable name="AdditionalData1" include="{F,OR(F,IF(v,InvoiceType;=;&quot;03-PO-TWSD&quot;);F,IF(v,InvoiceType;=;&quot;05-PC-TWSD&quot;))}">001</variable>
+							
+							<section name="TWSATCHAddData1" include="{F,OR(F,IF(v,CompanyCode;=;&quot;TWSAT&quot;);F,IF(v,CompanyCode;=;&quot;TWSCH&quot;))}">
+								<variable name="AdditionalData1" include="{F,OR(F,IF(F,LEFT(v,InvoiceType;5);=;&quot;01-DE&quot;);F,IF(F,LEFT(v,InvoiceType;5);=;&quot;02-CR&quot;))}">701</variable>
+								<variable name="AdditionalData1" include="{F,OR(F,IF(F,LEFT(v,InvoiceType;5);=;&quot;03-PO&quot;);F,IF(F,LEFT(v,InvoiceType;5);=;&quot;05-PC&quot;))}">005</variable>
+							</section>
+							
+							<section name="TWSBAddData1" include="{F,IF(v,CompanyCode;=;&quot;TWSB&quot;)}">
+								<section name="TWSBAddData1Debit" include="{F,OR(F,IF(v,InvoiceType;=;&quot;01-DE-TWSB&quot;);F,IF(v,InvoiceType;=;&quot;03-PO-TWSB&quot;))}">
+									<variable name="AdditionalData1" include="{F,IF(v,TrelleborgVatNumber;=;&quot;BE0402981847&quot;)}">010</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,TrelleborgVatNumber;=;&quot;&quot;)}">010</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,TrelleborgVatNumber;=;&quot;GB678658170&quot;)}">020</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,TrelleborgVatNumber;=;&quot;NL804656411B01&quot;)}">040</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,TrelleborgVatNumber;=;&quot;DE284988579&quot;)}">030</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,TrelleborgVatNumber;=;&quot;FR20802106906&quot;)}">037</variable>
+								</section>
+								<section name="TWSBAddData1Credit" include="{F,OR(F,IF(v,InvoiceType;=;&quot;02-CR-TWSB&quot;);F,IF(v,InvoiceType;=;&quot;05-PC-TWSB&quot;))}">
+									<variable name="AdditionalData1" include="{F,IF(v,TrelleborgVatNumber;=;&quot;BE0402981847&quot;)}">015</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,TrelleborgVatNumber;=;&quot;&quot;)}">015</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,TrelleborgVatNumber;=;&quot;GB678658170&quot;)}">025</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,TrelleborgVatNumber;=;&quot;NL804656411B01&quot;)}">045</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,TrelleborgVatNumber;=;&quot;DE284988579&quot;)}">035</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,TrelleborgVatNumber;=;&quot;FR20802106906&quot;)}">038</variable>
+								</section>
+							</section>
+							
+							<section name="WBDEAddData1" include="{F,IF(v,CompanyCode;=;&quot;WBDE&quot;)}">
+								<variable name="AdditionalData1" include="{F,OR(F,IF(F,LEFT(v,InvoiceType;5);=;&quot;01-DE&quot;);F,IF(F,LEFT(v,InvoiceType;5);=;&quot;02-CR&quot;))}">701</variable>
+								<variable name="AdditionalData1" include="{F,OR(F,IF(F,LEFT(v,InvoiceType;5);=;&quot;03-PO&quot;);F,IF(F,LEFT(v,InvoiceType;5);=;&quot;05-PC&quot;))}">001</variable>
+							</section>
+							
+							
+							<section name="TWSCZAddData1" include="{F,IF(v,CompanyCode;=;&quot;TWSCZ&quot;)}">
+								<variable name="AdditionalData1" include="{F,IF(F,LEFT(v,InvoiceType;5);=;&quot;01-DE&quot;)}">010</variable>
+								<variable name="AdditionalData1" include="{F,IF(F,LEFT(v,InvoiceType;5);=;&quot;03-PO&quot;)}">020</variable>
+								<variable name="AdditionalData1" include="{F,OR(F,IF(F,LEFT(v,InvoiceType;5);=;&quot;02-CR&quot;);F,IF(F,LEFT(v,InvoiceType;5);=;&quot;05-PC&quot;))}">030</variable>
+								
+							</section>
+							
+							
+							<section name="SAFRAddData1" include="{F,OR(F,IF(v,CompanyCode;=;&quot;SAFR&quot;);F,IF(v,CompanyCode;=;&quot;TWSCN&quot;);F,IF(v,CompanyCode;=;&quot;TWSSTARCN&quot;))}">
+								<variable name="AdditionalData1" include="{F,OR(F,IF(F,LEFT(v,InvoiceType;5);=;&quot;01-DE&quot;);F,IF(F,LEFT(v,InvoiceType;5);=;&quot;02-CR&quot;))}">002</variable>
+								<variable name="AdditionalData1" include="{F,OR(F,IF(F,LEFT(v,InvoiceType;5);=;&quot;03-PO&quot;);F,IF(F,LEFT(v,InvoiceType;5);=;&quot;05-PC&quot;))}">001</variable>
+							</section>
+							
+							
+							<section name="TWSLVAddData1" include="{F,IF(v,CompanyCode;=;&quot;TWSLV&quot;)}">
+								<variable name="AdditionalData1" include="{F,OR(F,IF(F,LEFT(v,InvoiceType;5);=;&quot;01-DE&quot;);F,IF(F,LEFT(v,InvoiceType;5);=;&quot;02-CR&quot;);F,IF(F,LEFT(v,InvoiceType;5);=;&quot;07-PP&quot;))}">001</variable>
+								<variable name="AdditionalData1" include="{F,OR(F,IF(F,LEFT(v,InvoiceType;5);=;&quot;03-PO&quot;);F,IF(F,LEFT(v,InvoiceType;5);=;&quot;05-PC&quot;))}">002</variable>
+							</section>
+							
+							<section name="TWSFR" include="{F,IF(v,CompanyCode;=;&quot;TWSFR&quot;)}">
+								<variable name="AdditionalData1" include="{F,IF(v,InvoiceType;=;&quot;01-DE-TWSFR&quot;)}">002</variable>
+								<variable name="AdditionalData1" include="{F,IF(v,InvoiceType;=;&quot;03-PO-TWSFR&quot;)}">001</variable>
+							</section>
+							<section name="TWSAAddData1" include="{F,IF(v,CompanyCode;=;&quot;TWSA&quot;)}">
+								<section name="TWSAAddData1Spartanburg" include="{F,IF(v,Division;=;&quot;Spartanburg&quot;)}">
+									<variable name="AdditionalData1" include="{F,IF(v,InvoiceType;=;&quot;01-DE-TWSA&quot;)}">299</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,InvoiceType;=;&quot;02-CR-TWSA&quot;)}">297</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,InvoiceType;=;&quot;03-PO-TWSA&quot;)}">298</variable>
+								</section>
+								<section name="TWSAAddData1CharlesCity" include="{F,IF(v,Division;=;&quot;CharlesCity&quot;)}">
+									<variable name="AdditionalData1" include="{F,IF(v,InvoiceType;=;&quot;01-DE-TWSA&quot;)}">102</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,InvoiceType;=;&quot;02-CR-TWSA&quot;)}">104</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,InvoiceType;=;&quot;03-PO-TWSA&quot;)}">101</variable>
+								</section>
+								<section name="TWSAAddData1Wakefield" include="{F,IF(v,Division;=;&quot;Wakefield&quot;)}">
+									<variable name="AdditionalData1" include="{F,IF(v,InvoiceType;=;&quot;01-DE-TWSA&quot;)}">301</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,InvoiceType;=;&quot;02-CR-TWSA&quot;)}">303</variable>
+									<variable name="AdditionalData1" include="{F,IF(v,InvoiceType;=;&quot;03-PO-TWSA&quot;)}">300</variable>
+								</section>
+							</section>
+							
+							
+							<variable name="SupplierVatNumberMD"/>
+							<variable name="VendorType"/>
+							<section name="VendorType" include="{F,IF(v,SupplierId;&lt;&gt;;&quot;&quot;)}">
+								<variable name="TrelleborgGroupID">{F,DBSELECT("select adm.ID from ADM_ORGANIZATION_ELEMENT adm where adm.CODE= 'Trelleborg_Group' fetch first 1 rows only"; v,providerconnection)}</variable>
+								<variable name="SupplierVatNumberMD">{F,DBSELECT("select IDENTIFIER_VALUE from ADM_SUPPLIER_IDENTIFIER where upper(IDENTIFIER_KEY_ID) = 'SUP_PARTY_ID' and SUPPLIER_ID = ? fetch first 1 rows only";v,providerconnection;v,SupplierId)}</variable>
+								<variable name="VendorType">{F,DBSELECT("SELECT CASE WHEN EXISTS (SELECT 1 FROM EXT_INV_LIST_17  WHERE ADMINISTRATIVE_SITE_ID = ? AND TEXT_2 = ? AND TEXT_1 = 'InternalSupplierVAT') THEN 'Internal' WHEN EXISTS (SELECT 1 FROM EXT_INV_LIST_17 WHERE  ADMINISTRATIVE_SITE_ID = ? AND TEXT_2 = ? AND TEXT_1 = 'InternalSupplierCode' )  THEN 'Internal'   ELSE  'External' END FROM dual";v,providerconnection;v,TrelleborgGroupID;v,SupplierVatNumberMD;v,CompanyID;v,SCSupplierCode)}</variable>
+							</section>
+							
+							
+							<variable name="TCode"> </variable>  
+							<section name="TCode" include="{F,IF(v,SupplierId;&lt;&gt;;&quot;&quot;)}">
+								<variable name="TrelleborgGroupID">{F,DBSELECT("select adm.ID from ADM_ORGANIZATION_ELEMENT adm where adm.CODE = 'Trelleborg_Group' fetch first 1 rows only";v,providerconnection)}</variable>
+								<variable name="SupplierVatNumberMD">{F,DBSELECT("select IDENTIFIER_VALUE from ADM_SUPPLIER_IDENTIFIER where upper(IDENTIFIER_KEY_ID) = 'SUP_PARTY_ID' and SUPPLIER_ID = ? fetch first 1 rows only";v,providerconnection;v,SupplierId)}</variable>
+								<variable name="TCode">{F,DBSELECT("SELECT COALESCE((SELECT TEXT_4 FROM EXT_INV_LIST_17 WHERE ADMINISTRATIVE_SITE_ID = ? AND TEXT_2 = ? AND TEXT_1 = 'InternalSupplierCode' FETCH FIRST 1 ROWS ONLY),(SELECT TEXT_4 FROM EXT_INV_LIST_17 WHERE ADMINISTRATIVE_SITE_ID = ? AND TEXT_2 = ? AND TEXT_1 = 'InternalSupplierVAT' FETCH FIRST 1 ROWS ONLY),N'') FROM dual";v,providerconnection;v,CompanyID;v,SCSupplierCode;v,TrelleborgGroupID;v,SupplierVatNumberMD)}</variable>
+							</section>
+							
+							
+							
+							<variable name="IntegrationID">{F,DBSELECT("select IDENTIFIER_VALUE from ADM_SUPPLIER_IDENTIFIER asi, ADM_IDENTIFIER_KEY aik where aik.id=asi.IDENTIFIER_KEY_ID and aik.identifier_key = 'IntegrationID' and asi.SUPPLIER_ID = ? FETCH FIRST 1 ROWS ONLY";v,providerconnection;v,SupplierId)}</variable>
+							
+							
+							<section name="TSSJDEE1TaxLogic" include="{F,OR(F,IF(v,CompanyCode;=;&quot;TSSUS52&quot;);F,IF(v,CompanyCode;=;&quot;TSSUS262&quot;))}">
+								<variable name="TaxLineAmount">{v,HeaderTaxSum}</variable>
+								<variable name="HeaderTaxSum">0</variable>
+							</section>
+							
+							<variable name="file_name"/>
+							<section name="filename" include="{F,IF(v,CompanyCode;=;&quot;TWSRS&quot;)}">
+								<variable name="file_name">{xmlInvoice,"/INVOICE_CENTER/CONTENT_FRAME/INVOICES/INVOICE/HEADER/FREE_TEXT"}</variable>
+							</section>
+							
+							
+							<section name="EInvoiceReferencePerson" include="{F,IF(v,Origin;=;2)}">
+								<clearTable>dsBuyerReferenceList</clearTable>
+								<section name="SplitBuyerReferencePersonSection">
+									<method name="SplitBuyerReferencePerson">
+										<builtInMethodParameterList name="bw_string_functions">
+											<parameter name="operation">split</parameter>
+											<parameter name="sourcestring">{v,BuyerReference}</parameter>
+											<parameter name="separator">;</parameter>
+											<return name="dsBuyerReferenceList"/>
+										</builtInMethodParameterList>
+									</method>
+								</section>
+								<variable name="SelectedBuyer"/>
+								<section name="BuyerReferenceListLoop" loopDataSource="dsBuyerReferenceList" loopExit="{F,IF(v,SelectedBuyer;&lt;&gt;;&quot;&quot;)}">
+									<variable name="CurrentBuyerReference">{dsBuyerReferenceList,dsBuyerReferenceList}</variable>
+									<section include="{F,IF(F,LEN(F,TRIM(v,CurrentBuyerReference));&gt;;1)}">
+										<variable name="SelectedBuyer">{F,TRIM(v,CurrentBuyerReference)}</variable>
+									</section>
+								</section>
+								<section include="{F,IF(v,SelectedBuyer;&lt;&gt;;&quot;&quot;)}">
+									<variable name="BuyerReference">{v,SelectedBuyer}</variable>
+								</section>
+							</section>
+							
+							
+							<variable name="ScannedBBAN"/>
+							<variable name="ScannedIBAN"/>
+
+							<section name="CheckBankAcc" include="{F,AND(F,INSTR(v,CompanyEntityConfigurations;&quot;C_106&quot;;TRUE;FALSE);F,IF(v,SupplierId;&lt;&gt;;&quot;&quot;);F,OR(F,IF(v,InvoiceSourceFromInvoice2;=;101);F,IF(v,InvoiceSourceFromInvoice2;=;102);F,IF(v,InvoiceSourceFromInvoice2;=;103);F,IF(v,InvoiceSourceFromInvoice2;=;104);F,IF(v,InvoiceSourceFromInvoice2;=;105)))}">
+
+								<variable name="ScannedBBAN1">{xmlInvoice,"(//PAYEE/BANKS/BANK_ACCOUNT_NUMBER)[1]"}</variable>
+								<variable name="ScannedBBAN2">{xmlInvoice,"(//PAYEE/BANKS/BANK_ACCOUNT_NUMBER)[2]"}</variable>
+								<variable name="ScannedBBAN3">{xmlInvoice,"(//PAYEE/BANKS/BANK_ACCOUNT_NUMBER)[3]"}</variable>
+								<variable name="ScannedBBAN4">{xmlInvoice,"(//PAYEE/BANKS/BANK_ACCOUNT_NUMBER)[4]"}</variable>
+								<variable name="ScannedBBAN5">{xmlInvoice,"(//PAYEE/BANKS/BANK_ACCOUNT_NUMBER)[5]"}</variable>
+
+								<variable name="ScannedBBAN">{v,ScannedBBAN1}</variable>
+
+								<variable name="ScannedBBAN" include="{F,IF(v,ScannedBBAN1;&lt;&gt;;&quot;&quot;)}">
+									{v,ScannedBBAN1}
+								</variable>
+								<variable name="ScannedBBAN" include="{F,IF(v,ScannedBBAN2;&lt;&gt;;&quot;&quot;)}">
+									{F,COMBINE(v,ScannedBBAN;",";v,ScannedBBAN2)}
+								</variable>
+								<variable name="ScannedBBAN" include="{F,IF(v,ScannedBBAN3;&lt;&gt;;&quot;&quot;)}">
+									{F,COMBINE(v,ScannedBBAN;",";v,ScannedBBAN3)}
+								</variable>
+								<variable name="ScannedBBAN" include="{F,IF(v,ScannedBBAN4;&lt;&gt;;&quot;&quot;)}">
+									{F,COMBINE(v,ScannedBBAN;",";v,ScannedBBAN4)}
+								</variable>
+								<variable name="ScannedBBAN" include="{F,IF(v,ScannedBBAN5;&lt;&gt;;&quot;&quot;)}">
+									{F,COMBINE(v,ScannedBBAN;",";v,ScannedBBAN5)}
+								</variable>
+
+								<variable name="ScannedBBAN">{F,REPLACE(v,ScannedBBAN;"-";"")}</variable>
+								<variable name="ScannedBBAN">{F,REPLACE(v,ScannedBBAN;".";"")}</variable>
+								<variable name="ScannedBBAN">{F,REPLACE(v,ScannedBBAN;" ";"")}</variable>
+								<variable name="ScannedBBAN">{F,REPLACE(v,ScannedBBAN;":";"")}</variable>
+								<variable name="ScannedBBAN" include="{F,IF(v,ScannedBBAN;=;&quot;&quot;)}">
+									NO_BBAN_FROM_XML
+								</variable>
+
+								<variable name="ScannedIBAN1">{xmlInvoice,"(//PAYEE/BANKS/IBAN_ACCOUNT_NUMBER)[1]"}</variable>
+								<variable name="ScannedIBAN2">{xmlInvoice,"(//PAYEE/BANKS/IBAN_ACCOUNT_NUMBER)[2]"}</variable>
+								<variable name="ScannedIBAN3">{xmlInvoice,"(//PAYEE/BANKS/IBAN_ACCOUNT_NUMBER)[3]"}</variable>
+								<variable name="ScannedIBAN4">{xmlInvoice,"(//PAYEE/BANKS/IBAN_ACCOUNT_NUMBER)[4]"}</variable>
+								<variable name="ScannedIBAN5">{xmlInvoice,"(//PAYEE/BANKS/IBAN_ACCOUNT_NUMBER)[5]"}</variable>
+
+								<variable name="ScannedIBAN">{v,ScannedIBAN1}</variable>
+
+								<variable name="ScannedIBAN" include="{F,IF(v,ScannedIBAN1;&lt;&gt;;&quot;&quot;)}">
+									{v,ScannedIBAN1}
+								</variable>
+								<variable name="ScannedIBAN" include="{F,IF(v,ScannedIBAN2;&lt;&gt;;&quot;&quot;)}">
+									{F,COMBINE(v,ScannedIBAN;",";v,ScannedIBAN2)}
+								</variable>
+								<variable name="ScannedIBAN" include="{F,IF(v,ScannedIBAN3;&lt;&gt;;&quot;&quot;)}">
+									{F,COMBINE(v,ScannedIBAN;",";v,ScannedIBAN3)}
+								</variable>
+								<variable name="ScannedIBAN" include="{F,IF(v,ScannedIBAN4;&lt;&gt;;&quot;&quot;)}">
+									{F,COMBINE(v,ScannedIBAN;",";v,ScannedIBAN4)}
+								</variable>
+								<variable name="ScannedIBAN" include="{F,IF(v,ScannedIBAN5;&lt;&gt;;&quot;&quot;)}">
+									{F,COMBINE(v,ScannedIBAN;",";v,ScannedIBAN5)}
+								</variable>
+
+								<variable name="ScannedIBAN">{F,REPLACE(v,ScannedIBAN;"-";"")}</variable>
+								<variable name="ScannedIBAN">{F,REPLACE(v,ScannedIBAN;".";"")}</variable>
+								<variable name="ScannedIBAN">{F,REPLACE(v,ScannedIBAN;" ";"")}</variable>
+								<variable name="ScannedIBAN">{F,REPLACE(v,ScannedIBAN;":";"")}</variable>
+								<variable name="ScannedIBAN" include="{F,IF(v,ScannedIBAN;=;&quot;&quot;)}">
+									NO_IBAN_FROM_XML
+								</variable>
+
+							</section>
+							
+							
+							<variable name="SupplierInvoiceWarning"/>
+							<section name="SupplierInvoiceNotifications" include="{F,NOT(F,IF(v,SupplierId;=;&quot;&quot;))}">
+								<variable name="SupplierInvCount">{F,DBSELECT("SELECT COUNT(id) AS CNT FROM IA_INVOICE WHERE SUPPLIER_ID = ? AND CREATION_TIME > ADD_MONTHS(CURRENT_DATE, -6)";v,providerconnection;v,SupplierID)}</variable>
+								<variable name="CompanyTimeExistCheck">{F,DBSELECT("SELECT CASE WHEN ROUND(MONTHS_BETWEEN(CURRENT_DATE, VALID_FROM), 1) > 3 THEN 1 ELSE 0 END AS CompanyTimeExistCheck FROM ADM_ORGANIZATION_ELEMENT WHERE ID = ?";v,providerconnection;v,CompanyID)}</variable>
+								<variable name="SupplierInvoiceWarning" include="{F,IF(v,CompanyTimeExistCheck;=;0)}">0</variable>
+								<variable name="SupplierInvoiceWarning" include="{F,AND(F,IF(v,CompanyTimeExistCheck;=;1);F,IF(v,SupplierInvCount;&lt;;1))}">1</variable>
+								<variable name="SupplierInvoiceWarning" include="{F,AND(F,IF(v,CompanyTimeExistCheck;=;1);F,IF(v,SupplierInvCount;&gt;;1))}">0</variable>
+							</section>
+							
+							
+							<section name="CurrencyXXXSmartPDF" include="{F,AND(F,IF(v,CurrencyCode;=;&quot;XXX&quot;);F,OR(F,IF(v,InvoiceSourceFromInvoice2;=;403);F,IF(v,InvoiceSourceFromInvoice2;=;402)))}">
+								<variable name="CurrencyCodeDefined">{F,DBSELECT("SELECT COUNT(id) FROM EXT_INV_LIST_17 WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? and Text_1 = 'SupplierDefaultInvoiceCurrency' and Text_2 = (select code from adm_supplier where id= ?)";v,providerconnection;v,CompanyId;v,SupplierId)}</variable>
+								<section name="CurrencyCodeIsDefined" include="{F,IF(v,CurrencyCodeDefined;=;1)}">
+									<variable name="CurrencyCode">{F,DBSELECT("SELECT TEXT_3 FROM EXT_INV_LIST_17 WHERE is_Active=1 and ADMINISTRATIVE_SITE_ID = ? and Text_1 = 'SupplierDefaultInvoiceCurrency' and Text_2 = (select code from adm_supplier where id= ?)";v,providerconnection;v,CompanyId;v,SupplierId)}</variable>
+								</section>
+							</section>
+							
+							
+							<section name="DelOrderNumberSuffix" include="{F,INSTR(v,CompanyEntityConfigurations;&quot;C_102&quot;;TRUE;FALSE)}">
+								<variable name="OrdersList" include="{F,IF(F,EXISTS(xmlInvoice;&quot;//HEADER/ORDER_INFORMATION/ORDER_NUMBER&quot;);=;1)}">{xmlInvoice,"//HEADER/ORDER_INFORMATION/ORDER_NUMBER"}</variable>
+								<variable name="OrdersList" include="{F,IF(F,EXISTS(xmlInvoice;&quot;//HEADER/ORDER_INFORMATION/ORDER_NUMBER&quot;);=;&quot;&quot;)}">{v,OrderNumber}</variable>
+								<section name="FindOrderData" include="{F,IF(v,OrderNumber;&lt;&gt;;&quot;&quot;)}">
+									<clearTable>OrderPolist</clearTable>
+									<method name="SplitOrders">
+										<builtInMethodParameterList name="bw_string_functions">
+											<parameter name="operation">split</parameter>
+											<parameter name="sourcestring">{v,OrdersList}</parameter>
+											<parameter name="separator">,</parameter>
+											<return name="OrderPolist"/>
+										</builtInMethodParameterList>
+									</method>
+									<variable name="FinalOrder"/>
+									<section name="LoopOrderNumbers" loopDataSource="OrderPolist">
+										<variable name="CurrentOrder">{OrderPolist,OrderPolist}</variable>
+										<variable name="position1">{F,REGEXP_POSITION(v,CurrentOrder;"-")}</variable>
+										<variable name="revposition2">{F,REGEXP_POSITION(F,REVERSE(v,CurrentOrder);"-")}</variable>
+										<variable name="position2">{F,CALC(F,LEN(v,CurrentOrder);"-";v,revposition2)}</variable>
+										<variable name="Suffix">{F,SUBSTR(v,CurrentOrder;F,CALC(v,position2;"+";1);F,LEN(v,CurrentOrder))}</variable>
+										<variable name="NumericValue">{F,AND(F,ISNUMERIC(v,Suffix);F,IF(F,LEN(v,Suffix);&lt;;3))}</variable>
+										<section name="CutSuffix" include="{v,NumericValue}">
+											<variable name="CutOrderNumber">{F,SUBSTR(v,CurrentOrder;0;v,position2)}</variable>
+											<variable name="FinalOrder" include="{F,IF(v,FinalOrder;&lt;&gt;;&quot;&quot;)}">{F,COMBINE(v,FinalOrder;",";v,CutOrderNumber)}</variable>
+											<variable name="FinalOrder" include="{F,IF(v,FinalOrder;=;&quot;&quot;)}">{v,CutOrderNumber}</variable>
+										</section>
+										<section name="NotCutSuffix" include="{F,NOT(v,NumericValue)}">
+											<variable name="FinalOrder" include="{F,IF(v,FinalOrder;&lt;&gt;;&quot;&quot;)}">{F,COMBINE(v,FinalOrder;",";v,CurrentOrder)}</variable>
+											<variable name="FinalOrder" include="{F,IF(v,FinalOrder;=;&quot;&quot;)}">{v,CurrentOrder}</variable>
+										</section>
+									</section>
+									<variable name="OrderNumber">{v,FinalOrder}</variable>
+								</section>
+							</section>
+							
+							
+							
+							<section name="OrderNumberSuffix" include="{F,AND(F,OR(F,IF(v,CompanyCode;=;&quot;TSSUS52&quot;);F,IF(v,CompanyCode;=;&quot;TSSUS262&quot;));F,OR(F,IF(v,InvoiceSourceFromInvoice2;=;403);F,IF(v,InvoiceSourceFromInvoice2;=;402)))}">
+								<variable name="OrdersList" include="{F,IF(F,EXISTS(xmlInvoice;&quot;//HEADER/ORDER_INFORMATION/ORDER_NUMBER&quot;);=;1)}">{xmlInvoice,"//HEADER/ORDER_INFORMATION/ORDER_NUMBER"}</variable>
+								<variable name="OrdersList" include="{F,IF(F,EXISTS(xmlInvoice;&quot;//HEADER/ORDER_INFORMATION/ORDER_NUMBER&quot;);=;&quot;&quot;)}">{v,OrderNumber}</variable>
+								<section name="FindOrderData" include="{F,IF(v,OrderNumber;&lt;&gt;;&quot;&quot;)}">
+									<clearTable>OrderlistUS52</clearTable>
+									<method name="SplitOrders">
+										<builtInMethodParameterList name="bw_string_functions">
+											<parameter name="operation">split</parameter>
+											<parameter name="sourcestring">{v,OrdersList}</parameter>
+											<parameter name="separator">,</parameter>
+											<return name="OrderlistUS52"/>
+										</builtInMethodParameterList>
+									</method>
+									<variable name="NewFinalOrder"/>
+									<section name="LoopOrderNumbers" loopDataSource="OrderlistUS52">
+										<variable name="CurrentOrder">{OrderlistUS52,OrderlistUS52}</variable>
+										<section name="CutSuffix" include="{v,CurrentOrder}">
+											<variable name="CutOrderNumber2">{F,SUBSTR(v,CurrentOrder;0;8)}</variable>
+											<variable name="NewFinalOrder" include="{F,IF(v,NewFinalOrder;&lt;&gt;;&quot;&quot;)}">{F,COMBINE(v,NewFinalOrder;",";v,CutOrderNumber2)}</variable>
+											<variable name="NewFinalOrder" include="{F,IF(v,NewFinalOrder;=;&quot;&quot;)}">{v,CutOrderNumber2}</variable>
+										</section>
+										<variable name="OrderNumber">{v,NewFinalOrder}</variable>
+									</section>
+								</section>
+							</section>
+							
+							
+							<variable name="SendByParameters">{F,DBSELECT("SELECT UPPER(org.IDENTIFIER_VALUE) FROM ADM_ORGANIZATION_IDENTIFIER org  
+																			JOIN ADM_IDENTIFIER_KEY id
+																			ON org.IDENTIFIER_KEY_ID=id.ID
+																			WHERE id.IDENTIFIER_KEY='C_100' AND org.ORGANIZATION_ELEMENT_ID=?";v,providerconnection;v,CompanyId)}</variable>
+							<section name="AutoSendIsOn" include="{F,IF(v,SendByParameters;&lt;&gt;;&quot;&quot;)}">
+								<variable name="Now">{F,NOW()}</variable>
+								<variable name="After">{F,DBSELECT("SELECT ap.VALUE FROM PE_ACTIVITY_PARAMETER ap
+														JOIN PE_ACTIVITY ac ON ap.ACTIVITY_ID=ac.ID
+														JOIN PE_PROCESS pr ON pr.ID=ac.PROCESS_ID
+														WHERE ap.KEY='DisableAutoActionStartHrs' AND pr.NAME='P2P Pro Row Level Approve'";v,providerconnection)}</variable>
+								<variable name="Before">{F,DBSELECT("SELECT ap.VALUE FROM PE_ACTIVITY_PARAMETER ap
+														JOIN PE_ACTIVITY ac ON ap.ACTIVITY_ID=ac.ID
+														JOIN PE_PROCESS pr ON pr.ID=ac.PROCESS_ID
+														WHERE ap.KEY='DisableAutoActionEndHrs' AND pr.NAME='P2P Pro Row Level Approve'";v,providerconnection)}</variable>
+								<variable name="End">{F,DBSELECT("SELECT TRUNC(LAST_DAY(SYSDATE),'DD')+1-?/24 FROM dual";v,providerconnection;v,Before)}</variable>
+								<variable name="Start">{F,DBSELECT("SELECT TRUNC(SYSDATE,'MM')+?/24 FROM dual";v,providerconnection;v,After)}</variable>
+								<section name="ValidPeriod" include="{F,AND(F,IF(v,Now;&gt;;v,Start);F,IF(v,Now;&lt;;v,End))}">
+									<variable name="Num2" include="{F,INSTR(v,SendByParameters;&quot;COMPANY&quot;;true;false)}">2</variable>
+									<section name="ByTypeAndOrigin" include="{F,IF(v,Num2;&lt;;2)}">
+										<variable name="TypeAndOrigin">{F,COMBINE(F,SUBSTR(v,InvoiceType;3;2);xmlInvoice,"//HEADER/HEADER_INFO[TITLE/@INFO_TYPE='Origin']/CONTENT")}</variable>
+										<variable name="Num2" include="{F,INSTR(v,SendByParameters;v,TypeAndOrigin;true;false)}">2</variable>
+									</section>
+									<section name="BySupplier" include="{F,AND(F,IF(v,Num2;&lt;;2);F,INSTR(v,SendByParameters;&quot;SUPPLIER&quot;;true;false))}">
+										<variable name='SuppCode'/>
+										<variable name='SupplierCode' include="{F,IF(v,SupplierCode;=;&quot;&quot;)}">{F,DBSELECT("SELECT CODE FROM ADM_SUPPLIER WHERE ID=?";v,providerconnection;v,SupplierID)}</variable>
+										<variable name='SuppCode' include="{F,IF(v,SupplierCode;&lt;&gt;;&quot;&quot;)}">{v,SupplierCode}</variable>
+										<variable name='SuppCode' include="{F,IF(v,SuppCode;=;&quot;&quot;)}">{F,REPLACE(v,IntegrationID;F,COMBINE(v,CompanyCode;"_");"")}</variable>
+										<variable name="SupplierTypesList">{F,DBSELECT("SELECT UPPER(TEXT_3) FROM EXT_INV_LIST_17 
+																		WHERE UPPER(TEXT_1)='AUTOSENDTOPROCESSSUPPLIER' AND ADMINISTRATIVE_SITE_ID=? AND TEXT_2=?";v,providerconnection;v,CompanyId;v,SuppCode)}</variable>
+										<variable name="Num2" include="{F,OR(F,INSTR(v,SupplierTypesList;&quot;ALL&quot;;true;false);F,INSTR(v,SupplierTypesList;F,SUBSTR(v,InvoiceType;3;2);true;false))}">2</variable>
+									</section>
+								</section>
+							</section>
+							
+							<variable name="suppliervalue1">{v,SupplierId}</variable>
+							
+							<method name="NewInvoice" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='NewInvoice']">
+								<parameter name="InstanceName">Invoice</parameter>
+								<parameter name="debug">{v,ObjectDebug}</parameter>
+
+								<parameter name="RemovalReason">0</parameter>
+								<parameter name="BaseDate" include="{v,isInvoiceDate}">{v,InvoiceDate}</parameter> <!-- Basware: Base Line Date -->
+
+								<parameter name="CashDate"/> <!-- Basware: Cash Date -->
+
+								<parameter name="CurrencyCode">{v,CurrencyCode}</parameter> <!-- Basware: Currency Code -->
+								<parameter name="CurrencyCodeCompany">{v,CurrencyCode}</parameter> <!-- Basware: CurrencyCodeComp -->
+								<parameter name="CurrencyCodeOrganization">{v,CurrencyCode}</parameter> <!-- Basware: CurrencyCodeOrg -->
+
+								<parameter name="Num10">{v,ExchangeRate}</parameter> <!-- Basware: Exchange Rate TB -->
+								<parameter name="Date2">{v,Date2}</parameter> <!-- Basware: Scan Date -->
+
+								<parameter name="GrossSum">{v,HeaderSumGross}</parameter> <!-- Basware: Gross Total -->
+								<parameter name="NetSum">{v,HeaderSumNet}</parameter> <!-- Basware: Net Total -->
+								<parameter name="TaxSum">{v,HeaderTaxSum}</parameter> <!-- Basware: Tax Sum -->
+								<parameter name="Num11">{v,HeaderTaxSum}</parameter> <!-- Basware: Tax Sum TB -->
+
+								<parameter name="Num23" include="{F,INSTR(v,CompanyEntityValidations;&quot;V_051&quot;;TRUE;FALSE)}">{v,HeaderTaxSum2}</parameter> <!-- Basware: Tax Sum2 -->
+
+								<parameter name="InvoiceDate" include="{v,isInvoiceDate}">{v,InvoiceDate}</parameter> <!-- Basware: Invoice Date -->
+								<parameter name="InvoiceNumber">{v,InvoiceNumber}</parameter> <!-- Basware: Invoice Number -->
+								<parameter name="InvoiceTypeCode">{v,InvoiceType}</parameter> <!-- Basware: Invoice Type Code -->
+								<parameter name="OrderNumber">{v,OrderNumber}</parameter> <!-- Basware: Order Number -->
+								<parameter name="ReferencePerson">{v,BuyerReference}</parameter> <!-- Basware: Reference Person -->
+
+								<section name="CheckReferencePerson" include="{F,IF(F,LEN(F,TRIM(v,BuyerReference));<;2)}">
+									<parameter name="ReferencePerson">{v,ContactReference}</parameter> <!-- Basware: Reference Person -->
+									<section name="CheckReferencePerson2" include="{F,IF(F,LEN(F,TRIM(v,ContactReference));<;2)}">
+										<parameter name="ReferencePerson">{v,ContactPerson}</parameter> <!-- Basware: Reference Person -->
+										<section name="CheckReferencePerson3" include="{F,IF(F,LEN(F,TRIM(v,ContactPerson));<;2)}">
+											<parameter name="ReferencePerson"></parameter> <!-- Basware: Reference Person -->
+										</section>
+									</section>
+								</section>
+
+								<parameter name="Origin">{v,Origin}</parameter>
+
+								<parameter name="ContractNumber">{v,ContractNumber}</parameter> <!-- Basware: ContractNumber -->
+								<parameter name="ReferenceNumber">{v,ReferenceNumber}</parameter> <!-- Basware: Reference Number -->
+
+								<parameter name="Text11" include="{F,INSTR(v,CompanyEntityConfigurations;&quot;C_109&quot;;TRUE;FALSE)}">{F,DBSELECT("SELECT TEXT_3 FROM EXT_INV_LIST_17
+									WHERE TEXT_1='SupplierAPStatus' AND ADMINISTRATIVE_SITE_ID=? AND TEXT_2=?";v,providerconnection;v,CompanyId;v,SupplierCode)}</parameter> <!-- Basware: AP Status -->
+
+								<parameter name="Text19">{v,ScanServiceId_BLOCK_ID}</parameter> <!-- Basware: Scan Service Id -->
+
+								<parameter name="TaxCode">{v,HeaderTaxCode}</parameter> <!-- Basware: TaxCode -->
+								<parameter name="TaxPercent">{v,HeaderTaxPercentage}</parameter> <!-- Basware: TaxPercent -->
+								<parameter name="Text21">{v,HeaderItemTaxCode}</parameter> <!-- Basware: Item Tax Code -->
+
+								<parameter name="PaymentPlanReference">{v,PaymentPlanReference}</parameter> <!-- Basware: Payment Plan Reference -->
+
+								<parameter name="Date3" include="{v,isInvoiceDeliveryDate}">{v,DeliveryDate}</parameter> <!-- Basware: Delivery Date -->
+								<parameter name="Date4" include="{v,isDueDate}">{v,DueDate}</parameter> <!-- Basware: Invoice Due Date -->
+
+								<parameter name="Text23">{v,SupplierVatNumber}</parameter> <!-- Basware: Supplier Vat Number -->
+								<parameter name="Text25">{v,LocalSupplierTaxID}</parameter> <!-- Basware: Supplier Local Tax ID -->
+								<parameter name="Text26">{v,TrelleborgVatNumber}</parameter> <!-- Basware: Trelleborg VAT Number -->
+								<parameter name="Text27">{v,KeyWords}</parameter> <!-- Basware: Keywords -->
+								<parameter name="Text28">{v,CompNameFromInvoice}</parameter> <!-- Basware: Company Name on Invoice -->
+								<parameter name="Num7">{v,DeliveryAddress}</parameter> <!-- Basware: Delivery Address -->
+								<parameter name="Num8">{v,TaxCodeSelectionType}</parameter> <!-- Basware: Tax Code selection type -->
+
+								<parameter name="Num2">{v,Num2}</parameter> <!-- Basware: Auto Send to Process -->
+
+								<parameter name="Num22">{v,SupplierInvoiceWarning}</parameter>
+
+								<parameter name="SupplierBankAccountBBAN">{v,SupplierBBAN}</parameter> <!-- Basware: Supplier BBAN -->
+
+								<parameter name="SupplierBankAccountIBAN">{v,SupplierIBAN}</parameter> <!-- Basware: Supplier IBAN -->
+
+								<parameter name="Text8">{v,Division}</parameter> <!-- Basware: Division -->
+
+								<parameter name="Text6">{v,AdditionalData1}</parameter> <!-- Basware: Additional Data 1 -->
+
+								<parameter name="Text14">{v,VendorType}</parameter> <!-- Basware: Supplier Type -->
+
+								<parameter name="Text59">{v,TCode}</parameter>
+
+								<parameter name="Text15">{v,file_name}</parameter> <!-- UWAGA: Text15 w Basware = Tax Code 2 -->
+
+								<parameter name="Text30">{v,EmailFromSender}</parameter> <!-- Basware: Email from Sender -->
+
+								<parameter name="Text34">{v,VATSerialNumber}</parameter> <!-- Basware: VAT Serial Number -->
+								<parameter name="Text35">{v,VATFormatNumber}</parameter> <!-- Basware: VAT Format Number -->
+
+								<parameter name="Text51">{v,skiprule}</parameter> <!-- Basware: Text51 -->
+
+								<parameter name="Text37">{v,ScannedIBAN}</parameter>
+								<parameter name="Text38">{v,ScannedBBAN}</parameter>
+																
+							</method>
+							
+							<variable name="TotalLineNetAmount">0</variable>
+							
+							<variable name="HeaderOrderNumber">{v,OrderNumber}</variable>
+							<section name="LoopLineItems" loopDataSource="xmlInvoice;/INVOICE_CENTER/CONTENT_FRAME/INVOICES/INVOICE/ROWS/ROW">
+								<variable name="LineSumSign">+</variable>
+								<variable name="LineSumSign" include="{F,EXISTS(xmlInvoice;&quot;PRICE_PER_UNIT/AMOUNT[@VAT='INCLUDED']/@SIGN&quot;)}">{xmlInvoice,"PRICE_PER_UNIT/AMOUNT[@VAT='INCLUDED']/@SIGN"}</variable>
+								<variable name="APriceGross">{xmlInvoice,"PRICE_PER_UNIT/AMOUNT[@VAT='INCLUDED']"}</variable>
+								<variable name="APriceGross">{F,EVAL(v,LineSumSign;=;"-";F,CALC("-1";*;F,TONUMBER(v,APriceGross;"."));v,APriceGross)}</variable>
+								<variable name="LineSumSign" include="{F,EXISTS(xmlInvoice;&quot;PRICE_PER_UNIT/AMOUNT[@VAT='EXCLUDED']/@SIGN&quot;)}">{xmlInvoice,"PRICE_PER_UNIT/AMOUNT[@VAT='EXCLUDED']/@SIGN"}</variable>
+								
+								<variable name="LineSumSign" include="{F,EXISTS(xmlInvoice;&quot;ROW_TOTAL/AMOUNT[@VAT='INCLUDED']/@SIGN&quot;)}">{xmlInvoice,"ROW_TOTAL/AMOUNT[@VAT='INCLUDED']/@SIGN"}</variable>
+								<variable name="GrossSum">{xmlInvoice,"ROW_TOTAL/AMOUNT[@VAT='INCLUDED']"}</variable>
+								<variable name="GrossSum">{F,EVAL(v,LineSumSign;=;"-";F,CALC("-1";*;F,TONUMBER(v,GrossSum;"."));v,GrossSum)}</variable>
+								<variable name="LineSumSign" include="{F,EXISTS(xmlInvoice;&quot;ROW_TOTAL/AMOUNT[@VAT='EXCLUDED']/@SIGN&quot;)}">{xmlInvoice,"ROW_TOTAL/AMOUNT[@VAT='EXCLUDED']/@SIGN"}</variable>
+								<variable name="ItemTotalSum">{xmlInvoice,"ROW_TOTAL/AMOUNT[@VAT='EXCLUDED']"}</variable>
+								
+								<variable name="ProductCode">{xmlInvoice,"ARTICLE/ARTICLE_ID"}</variable>
+								<variable name="ProductName">{xmlInvoice,"ARTICLE/ARTICLE_NAME"}</variable>
+								
+								
+								<section name="GetHeaderOrderNumberFromLines" include="{F,AND(F,IF(v,RemoveOrderNumber;=;&quot;false&quot;);F,IF(v,CleanLogisticPO;=;&quot;false&quot;))}">
+									<variable name="OrderNumber">{xmlInvoice,"ORDER_NUMBER"}</variable>
+									<variable name="OrderNumber" include="{F,IF(v,OrderNumber;=;&quot;&quot;)}">{xmlInvoice,"ORDER_INFORMATION/ORDER_NUMBER"}</variable>
+								</section>
+								
+								<section name="DelLineOrderNumberSuffix" include="{F,INSTR(v,CompanyEntityConfigurations;&quot;C_102&quot;;TRUE;FALSE)}">
+									<section name="FindLineOrderData" include="{F,IF(v,OrderNumber;&lt;&gt;;&quot;&quot;)}">
+										<clearTable>LineOrderPolist</clearTable>
+										<method name="SplitOrders">
+											<builtInMethodParameterList name="bw_string_functions">
+												<parameter name="operation">split</parameter>
+												<parameter name="sourcestring">{v,OrderNumber}</parameter>
+												<parameter name="separator">,</parameter>
+												<return name="LineOrderPolist"/>
+											</builtInMethodParameterList>
+										</method>
+										<variable name="FinalLineOrder"/>
+										<section name="LoopOrderNumbers" loopDataSource="LineOrderPolist">
+											<variable name="CurrentOrder">{LineOrderPolist,LineOrderPolist}</variable>
+											<variable name="position1">{F,REGEXP_POSITION(v,CurrentOrder;"-")}</variable>
+											<variable name="revposition2">{F,REGEXP_POSITION(F,REVERSE(v,CurrentOrder);"-")}</variable>
+											<variable name="position2">{F,CALC(F,LEN(v,CurrentOrder);"-";v,revposition2)}</variable>
+											<variable name="Suffix">{F,SUBSTR(v,CurrentOrder;F,CALC(v,position2;"+";1);F,LEN(v,CurrentOrder))}</variable>
+											<variable name="NumericValue">{F,AND(F,ISNUMERIC(v,Suffix);F,IF(F,LEN(v,Suffix);&lt;;3))}</variable>
+											<section name="CutSuffix" include="{v,NumericValue}">
+												<variable name="CutOrderNumber">{F,SUBSTR(v,CurrentOrder;0;v,position2)}</variable>
+												<variable name="FinalLineOrder" include="{F,IF(v,FinalLineOrder;&lt;&gt;;&quot;&quot;)}">{v,CutOrderNumber}</variable>
+												<variable name="FinalLineOrder" include="{F,IF(v,FinalLineOrder;=;&quot;&quot;)}">{v,CutOrderNumber}</variable>
+											</section>
+											<section name="NotCutSuffix" include="{F,NOT(v,NumericValue)}">
+												<variable name="FinalLineOrder" include="{F,IF(v,FinalLineOrder;&lt;&gt;;&quot;&quot;)}">{v,CurrentOrder}</variable>
+												<variable name="FinalLineOrder" include="{F,IF(v,FinalLineOrder;=;&quot;&quot;)}">{v,CurrentOrder}</variable>
+											</section>
+										</section>
+										<variable name="OrderNumber">{F,INSTR(v,OrderNumber;",";"";v,FinalLineOrder)}</variable>
+										
+									</section>
+								</section>
+								
+								
+								
+								<section name="OrderNumberLineSuffix" include="{F,AND(F,OR(F,IF(v,CompanyCode;=;&quot;TSSUS52&quot;);F,IF(v,CompanyCode;=;&quot;TSSUS262&quot;));F,OR(F,IF(v,InvoiceSourceFromInvoice2;=;403);F,IF(v,InvoiceSourceFromInvoice2;=;402)))}">
+									<section name="FindLineOrderData2" include="{F,IF(v,OrderNumber;&lt;&gt;;&quot;&quot;)}">
+										<clearTable>LineOrderlistUS52</clearTable>
+										<method name="SplitOrders">
+											<builtInMethodParameterList name="bw_string_functions">
+												<parameter name="operation">split</parameter>
+												<parameter name="sourcestring">{v,OrderNumber}</parameter>
+												<parameter name="separator">,</parameter>
+												<return name="LineOrderlistUS52"/>
+											</builtInMethodParameterList>
+										</method>
+										<variable name="NewFinalLineOrder"/>
+										<section name="LoopOrderNumbers" loopDataSource="LineOrderlistUS52">
+											<variable name="CurrentOrder">{LineOrderlistUS52,LineOrderlistUS52}</variable>
+											<section name="CutSuffix" include="{v,CurrentOrder}">
+												<variable name="CutOrderNumber2">{F,SUBSTR(v,CurrentOrder;0;8)}</variable>
+												<variable name="NewFinalLineOrder" include="{F,IF(v,NewFinalLineOrder;&lt;&gt;;&quot;&quot;)}">{F,COMBINE(v,NewFinalLineOrder;",";v,CutOrderNumber2)}</variable>
+												<variable name="NewFinalLineOrder" include="{F,IF(v,NewFinalLineOrder;=;&quot;&quot;)}">{v,CutOrderNumber2}</variable>
+											</section>
+										</section>
+										<variable name="OrderNumber">{F,INSTR(v,OrderNumber;",";"";v,NewFinalLineOrder)}</variable>
+									</section>
+								</section>
+
+								<section name="CopyOrderFromHeaderToLine" include="{F,IF(v,OrderNumber;=;&quot;&quot;)}">
+									<variable name="OrderNumber" include="{F,IF(F,INSTR(v,HeaderOrderNumber;&quot;,&quot;;1;0);=;0)}">{v,HeaderOrderNumber}</variable>
+								</section>
+
+								<section name="IsNumericOrderNumber" include="{F,ISNUMERIC(v,OrderNumber)}">
+									<variable name="OrderNumber">{F,TONUMBER(v,OrderNumber;",")}</variable>
+								</section>
+
+								<variable name="LineSumSign" include="{F,EXISTS(xmlInvoice;&quot;QUANTITY/CHARGED/@SIGN&quot;)}">{xmlInvoice,"QUANTITY/CHARGED/@SIGN"}</variable>
+								<variable name="Quantity">{xmlInvoice,"QUANTITY/CHARGED"}</variable>
+
+								<variable name="QuantityUnit">{xmlInvoice,"QUANTITY/CHARGED/@Q_UNIT"}</variable>
+								<variable name="APriceNet">{xmlInvoice,"PRICE_PER_UNIT/AMOUNT[@VAT='EXCLUDED']"}</variable>
+
+								<section name="calcApriceNet" include="{F,AND(F,IF(v,ItemTotalSum;&lt;&gt;;&quot;&quot;);F,IF(v,ItemTotalSum;&lt;&gt;;0))}">
+									<variable name="Quantit">{F,TONUMBER(v,Quantity;".")}</variable>
+									<section name="calcApriceNet1" include="{F,AND(F,IF(v,Quantit;&lt;&gt;;&quot;&quot;);F,IF(v,Quantit;&lt;&gt;;0))}">
+										<variable name="checkAPriceNet"/>
+										<variable name="checkAPriceNet">{xmlInvoice,"PRICE_PER_UNIT/AMOUNT[@VAT='EXCLUDED']"}</variable>
+										<variable name="checkAPriceNet">{F,TONUMBER(v,APriceNet;".")}</variable>
+										<variable name="checkAPriceNet">{F,EVAL(v,checkAPriceNet;=;0;zero;notZero)}</variable>
+										<variable name="CheckItemTotalSum">{xmlInvoice,"ROW_TOTAL/AMOUNT[@VAT='EXCLUDED']"}</variable>
+										<variable name="CheckItemTotalSum">{F,TONUMBER(v,ItemTotalSum;".")}</variable>
+										<variable name="CheckItemTotalSum">{F,EVAL(v,CheckItemTotalSum;=;0;zero;notZero)}</variable>
+										<section name="TotalSumCheck" include="{F,EVAL(v,CheckItemTotalSum;=;&quot;zero&quot;;false;true)}">
+											<variable name="APriceNet" include="{F,EVAL(v,checkAPriceNet;=;&quot;zero&quot;;true;false)}">{F,ROUND(F,CALC(F,TONUMBER(v,ItemTotalSum;".");/;F,TONUMBER(v,Quantit;"."));4)}</variable>
+										</section>
+									</section>
+								</section>
+								
+								<variable name="APriceNet">{F,EVAL(v,LineSumSign;=;"-";F,CALC("-1";*;F,TONUMBER(v,APriceNet;"."));v,APriceNet)}</variable>
+								<variable name="ItemTotalSum">{F,EVAL(v,LineSumSign;=;"-";F,CALC("-1";*;F,TONUMBER(v,ItemTotalSum;"."));v,ItemTotalSum)}</variable>
+								
+								<variable name="OrderRowNumber">{xmlInvoice,"ORDER_INFORMATION/ORDER_POSITION"}</variable>
+								
+								
+								<section name="OrderRowNumberMask" include="{F,AND(F,IF(F,LEFT(v,CompanyCode;5);=;&quot;TSSUS&quot;);F,ISNUMERIC(v,OrderRowNumber))}">
+									<variable name="NumericRowNumber">{F,TONUMBER(v,OrderRowNumber;".")}</variable>
+									<section name="OrderRowNumberMask" include="{F,IF(v,NumericRowNumber;&gt;;999)}">
+										<variable name="OrderRowNumber">{F,COMBINE(F,CALC(F,TONUMBER(v,OrderRowNumber;".");/;1000);".000")}</variable>
+									</section>
+									<section name="OrderRowNumberMask" include="{F,NOT(F,IF(v,NumericRowNumber;&gt;;999))}">
+										<variable name="OrderRowNumber">{F,COMBINE(F,TONUMBER(v,OrderRowNumber;".");".000")}</variable>
+									</section>
+								</section>
+								
+								
+								<section name="CutOrderRowNumber" include="{F,AND(F,INSTR(v,CompanyEntityConfigurations;&quot;C_104&quot;;TRUE;FALSE);F,ISNUMERIC(v,OrderRowNumber))}">
+									<variable name="OrderRowNumber">{F,TONUMBER(v,OrderRowNumber;".")}</variable>
+								</section>
+								
+								<variable name="LineSumSign" include="{F,EXISTS(xmlInvoice;&quot;VAT/VAT_AMOUNT/@SIGN&quot;)}">{xmlInvoice,"VAT/VAT_AMOUNT/@SIGN"}</variable>
+								<variable name="TaxSum">{xmlInvoice,"VAT/VAT_AMOUNT/AMOUNT"}</variable>
+								<variable name="TaxSum" include="{F,IF(v,TaxSum;=;&quot;NaN&quot;)}">0</variable>
+								
+								<variable name="TaxSum">{F,EVAL(v,LineSumSign;=;"-";F,CALC("-1";*;F,TONUMBER(v,TaxSum;"."));v,TaxSum)}</variable>
+								<variable name="TaxPercent">{xmlInvoice,"VAT/RATE"}</variable>
+								
+								<variable name="DiscountAmount">{xmlInvoice,"DISCOUNT/DISCOUNT_AMOUNT/AMOUNT[@VAT='INCLUDED']"}</variable>
+								
+								
+								<variable name="DeliveryNote"></variable>
+
+								
+								<section name="SetDeliveryNote_Header"
+										 include="{F,EXISTS(xmlInvoice;&quot;//HEADER/FREE_TEXT[@TEXT_TYPE='Delivery note'][text()]&quot;)}">
+									<variable name="DeliveryNote">
+										{xmlInvoice,"//HEADER/FREE_TEXT[@TEXT_TYPE='Delivery note']"}
+									</variable>
+									<variable name="DeliveryNote">
+										{F,REPLACE(v,DeliveryNote;"-";"")}
+									</variable>
+									<variable name="DeliveryNote">
+										{F,REPLACE(v,DeliveryNote;" ";"")}
+									</variable>
+								</section>
+
+								
+								<section name="SetDeliveryNote_Unknown"
+										 include="{F,EXISTS(xmlInvoice;&quot;//DELIVERY_PARTY/CUSTOMER_INFORMATION/FREE_TEXT[@TEXT_TYPE='UNKNOWN'][text()]&quot;)}">
+									<variable name="DeliveryNote">
+										{xmlInvoice,"//DELIVERY_PARTY/CUSTOMER_INFORMATION/FREE_TEXT[@TEXT_TYPE='UNKNOWN']"}
+									</variable>
+									<variable name="DeliveryNote">
+										{F,REPLACE(v,DeliveryNote;"-";"")}
+									</variable>
+									<variable name="DeliveryNote">
+										{F,REPLACE(v,DeliveryNote;" ";"")}
+									</variable>
+								</section>
+
+								
+								<section name="SetDeliveryNote_NoteNumber"
+										 include="{F,EXISTS(xmlInvoice;&quot;NOTE_NUMBER[text()]&quot;)}">
+									<variable name="DeliveryNote">
+										{xmlInvoice,"NOTE_NUMBER"}
+									</variable>
+									<variable name="DeliveryNote">
+										{F,REPLACE(v,DeliveryNote;"-";"")}
+									</variable>
+									<variable name="DeliveryNote">
+										{F,REPLACE(v,DeliveryNote;" ";"")}
+									</variable>
+								</section>
+
+								
+								<section name="SetDeliveryNote_ArrivalInfo"
+										include="{F,EXISTS(xmlInvoice;&quot;ARRIVAL_INFO/DELIVERY_NOTE[text()]&quot;)}">
+									<variable name="DeliveryNote">
+										{xmlInvoice,"ARRIVAL_INFO/DELIVERY_NOTE"}
+									</variable>
+									<variable name="DeliveryNote">
+										{F,REPLACE(v,DeliveryNote;"-";"")}
+									</variable>
+									<variable name="DeliveryNote">
+										{F,REPLACE(v,DeliveryNote;" ";"")}
+									</variable>
+								</section>
+							
+								<section name="IsNumericDelNoteNumber" include="{F,ISNUMERIC(v,DeliveryNote)}">
+									<variable name="DeliveryNote">{F,TONUMBER(v,DeliveryNote;",")}</variable>
+								</section>
+								
+								
+								<variable name="SpecialCharacterPosition">{F,REGEXP_POSITION(v, DeliveryNote;"[^\w\*]")}</variable>
+								<section name="DeliveryNoteValidation" include="{F,AND(F,IF(v, DeliveryNote;&lt;&gt;;&quot;&quot;);F,IF(v,SpecialCharacterPosition;&lt;&gt;;0))}">
+									
+									<section name="CheckifNotTSSUK11" include="{F,NOT(F,IF(v,CompanyCode;=;&quot;TSSUK11&quot;))}">
+										
+										<variable name="SpecialCharacterPosition">{F,CALC(v, SpecialCharacterPosition;"-";1)}</variable>
+										<variable name="DeliveryNote">{F,SUBSTR(v,DeliveryNote;0;v,SpecialCharacterPosition)}</variable>
+									</section>
+								</section>
+								
+								
+								<section name="TIPINTSSDeliveryNoteNumber" include="{F,IF(v,CompanyCode;=;&quot;TIPINTSS&quot;)}">
+									<variable name="DeliveryNote">{v,InvoiceNumber}</variable>
+								</section>
+								
+								
+								<variable name="AdditionalCostKeywordDetermined"/>
+								<section name="CheckIfRequiredDefined" include="{F,OR(F,IF(v,ProductCode;&lt;&gt;;&quot;&quot;);F,IF(v,ProductName;&lt;&gt;;&quot;&quot;))}">
+									<variable name="ProductNameUpper">{F,UPPER(v,ProductName)}</variable>
+									<variable name="ProductCodeUpper">{F,UPPER(v,ProductCode)}</variable>
+									
+									<variable name="ACKeywordCheckSupplierProductCode">{F,DBSELECT("select count(1) cnt from OM2_AC_TYPES AC inner join OM2_AC_TYPE_SUPPLIERS ACSUP on AC.ID=ACSUP.AC_TYPE_ID inner join OM2_AC_TYPE_KEYWORDS ACKEYWORD on AC.ID=ACKEYWORD.AC_TYPE_ID where AC.ORGANIZATION_ELEMENT_ID = ? and ACSUP.SUPPLIER_ID = ? and upper(ACKEYWORD.KEYWORD) = ?";v,providerconnection;v,CompanyId;v,SupplierID;v,ProductCodeUpper)}</variable>
+									<variable name="ACKeywordCheckSupplierProductName">{F,DBSELECT("select count(1) cnt from OM2_AC_TYPES AC inner join OM2_AC_TYPE_SUPPLIERS ACSUP on AC.ID=ACSUP.AC_TYPE_ID inner join OM2_AC_TYPE_KEYWORDS ACKEYWORD on AC.ID=ACKEYWORD.AC_TYPE_ID where AC.ORGANIZATION_ELEMENT_ID = ? and ACSUP.SUPPLIER_ID = ? and upper(ACKEYWORD.KEYWORD) = ?";v,providerconnection;v,CompanyId;v,SupplierID;v,ProductNameUpper)}</variable>
+									
+									<variable name="ACKeywordCheckGeneralProductCode">{F,DBSELECT("select count(1) cnt from OM2_AC_TYPES AC left join OM2_AC_TYPE_SUPPLIERS ACSUP on AC.ID=ACSUP.AC_TYPE_ID inner join OM2_AC_TYPE_KEYWORDS ACKEYWORD on AC.ID=ACKEYWORD.AC_TYPE_ID where AC.ORGANIZATION_ELEMENT_ID = ? and ACSUP.AC_TYPE_ID is null and upper(ACKEYWORD.KEYWORD) = ?";v,providerconnection;v,CompanyId;v,ProductCodeUpper)}</variable>
+									<variable name="ACKeywordCheckGeneralProductName">{F,DBSELECT("select count(1) cnt from OM2_AC_TYPES AC left join OM2_AC_TYPE_SUPPLIERS ACSUP on AC.ID=ACSUP.AC_TYPE_ID inner join OM2_AC_TYPE_KEYWORDS ACKEYWORD on AC.ID=ACKEYWORD.AC_TYPE_ID where AC.ORGANIZATION_ELEMENT_ID = ? and ACSUP.AC_TYPE_ID is null and upper(ACKEYWORD.KEYWORD) = ?";v,providerconnection;v,CompanyId;v,ProductNameUpper)}</variable>
+									
+									<variable name="AdditionalCostKeywordDetermined" include="{F,AND(F,IF(v,ACKeywordCheckSupplierProductCode;&gt;;0);F,IF(v,ACKeywordCheckSupplierProductCode;&gt;;v,ACKeywordCheckSupplierProductName))}">{v,ProductCode}</variable>
+									<variable name="AdditionalCostKeywordDetermined" include="{F,AND(F,IF(v,ACKeywordCheckSupplierProductName;&gt;;0);F,IF(v,ACKeywordCheckSupplierProductName;&gt;;v,ACKeywordCheckSupplierProductCode))}">{v,ProductName}</variable>
+									<variable name="AdditionalCostKeywordDetermined" include="{F,AND(F,IF(v,ACKeywordCheckSupplierProductCode;&gt;;0);F,IF(v,ACKeywordCheckSupplierProductCode;=;v,ACKeywordCheckSupplierProductName))}">{v,ProductCode}</variable>
+									
+									<variable name="AdditionalCostKeywordDetermined" include="{F,AND(F,AND(F,IF(v,ACKeywordCheckSupplierProductCode;=;0);F,IF(v,ACKeywordCheckSupplierProductName;=;0));F,AND(F,IF(v,ACKeywordCheckGeneralProductCode;&gt;;0);F,IF(v,ACKeywordCheckGeneralProductCode;&gt;;v,ACKeywordCheckGeneralProductName)))}">{v,ProductCode}</variable>
+									<variable name="AdditionalCostKeywordDetermined" include="{F,AND(F,AND(F,IF(v,ACKeywordCheckSupplierProductCode;=;0);F,IF(v,ACKeywordCheckSupplierProductName;=;0));F,AND(F,IF(v,ACKeywordCheckGeneralProductName;&gt;;0);F,IF(v,ACKeywordCheckGeneralProductName;&gt;;v,ACKeywordCheckGeneralProductCode)))}">{v,ProductName}</variable>
+									<variable name="AdditionalCostKeywordDetermined" include="{F,AND(F,AND(F,IF(v,ACKeywordCheckSupplierProductCode;=;0);F,IF(v,ACKeywordCheckSupplierProductName;=;0));F,AND(F,IF(v,ACKeywordCheckGeneralProductCode;&gt;;0);F,IF(v,ACKeywordCheckGeneralProductCode;=;v,ACKeywordCheckGeneralProductName)))}">{v,ProductCode}</variable>
+								</section>
+								
+								<method name="AddLineItem" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='AddLineItem']">
+									<parameter name="InstanceName">Invoice</parameter>
+									<parameter name="debug">{v,ObjectDebug}</parameter>
+									<parameter name="DeliveryNoteNumber">{v,DeliveryNote}</parameter>
+									<parameter name="APriceGross">{v,APriceGross}</parameter>
+									<parameter name="APriceNet">{v,APriceNet}</parameter>
+									<parameter name="GrossSum">{v,GrossSum}</parameter>
+									<parameter name="ItemTotalSum">{v,ItemTotalSum}</parameter>
+									<parameter name="NetSum">{v,ItemTotalSum}</parameter>
+									<parameter name="ProductCode">{v,ProductCode}</parameter>
+									<parameter name="ProductName">{v,ProductName}</parameter>
+									<parameter name="OrderNumber">{v,OrderNumber}</parameter>
+									<parameter name="OrderRowNumber">{v,OrderRowNumber}</parameter>
+									<parameter name="TaxSum">{v,TaxSum}</parameter>
+									<parameter name="TaxPercent">{v,TaxPercent}</parameter>
+									<parameter name="Quantity">{v,Quantity}</parameter>
+									<parameter name="QuantityUnit">{v,QuantityUnit}</parameter>
+									<parameter name="DiscountAmount">{v,DiscountAmount}</parameter>
+									
+									
+									
+									
+									<parameter name="AdditionalCostRecognition">{v,AdditionalCostKeywordDetermined}</parameter>
+									
+								</method>
+								
+								<section name="ItemTotalSumEmptyCheck" include="{F,NOT(F,IF(v,ItemTotalSum;=;&quot;&quot;))}">
+									<variable name="TotalLineNetAmount">{F,CALC(v,TotalLineNetAmount;+;v,ItemTotalSum)}</variable>
+								</section>
+							</section>
+							
+							<variable name="HeaderSumGross" include="{F,IF(v,HeaderSumGross;=;&quot;&quot;)}">0</variable>
+							<variable name="HeaderTaxSum" include="{F,IF(v,HeaderTaxSum;=;&quot;&quot;)}">0</variable>
+							<variable name="HeaderSumGross">{v,HeaderSumGross}</variable>
+							<variable name="HeaderTaxSum">{v,HeaderTaxSum}</variable>
+							<variable name="NegativeHeaderTaxSum">{F,CALC("-1";*;v,HeaderTaxSum)}</variable>
+							<variable name="CalculatedHeaderSumNet">{F,CALC(v,HeaderSumGross;+;v,NegativeHeaderTaxSum)}</variable>
+							
+							<section name="CompareTotalLineNetAmount" include="{F,IF(F,CALC(v,TotalLineNetAmount;+;0);&lt;&gt;;F,CALC(v,CalculatedHeaderSumNet;+;0))}">
+								<section name="AddFreightLine" include="{F,IF(v,FreightSum;&lt;&gt;;0)}">
+									<method name="AddLineItem" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='AddLineItem']">
+										<parameter name="InstanceName">Invoice</parameter>
+										<parameter name="debug">{v,ObjectDebug}</parameter>
+										<parameter name="ItemTotalSum">{v,FreightSum}</parameter>
+										<parameter name="NetSum">{v,FreightSum}</parameter>
+										<parameter name="AdditionalCost">True</parameter>
+										<parameter name="LineType">1</parameter>
+										<parameter name="AdditionalCostRecognition">FREIGHT</parameter>
+										<parameter name="APriceNet">{v,FreightSum}</parameter>
+										<parameter name="Quantity">1</parameter>
+									</method>
+								</section>
+								<section name="AddSurCharge" include="{F,IF(v,SurCharge;&lt;&gt;;0)}">
+									<method name="AddLineItem" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='AddLineItem']">
+										<parameter name="InstanceName">Invoice</parameter>
+										<parameter name="debug">{v,ObjectDebug}</parameter>
+										<parameter name="ItemTotalSum">{v,SurCharge}</parameter>
+										<parameter name="NetSum">{v,SurCharge}</parameter>
+										<parameter name="AdditionalCost">True</parameter>
+										<parameter name="LineType">1</parameter>
+										<parameter name="AdditionalCostRecognition">SURCHARGE</parameter>
+										<parameter name="APriceNet">{v,SurCharge}</parameter>
+										<parameter name="Quantity">1</parameter>
+									</method>
+								</section>
+								
+								<section name="AddDeliveryExtra" include="{F,IF(v,DeliveryExtra;&lt;&gt;;0)}">
+									<method name="AddLineItem" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='AddLineItem']">
+										<parameter name="InstanceName">Invoice</parameter>
+										<parameter name="debug">{v,ObjectDebug}</parameter>
+										<parameter name="ItemTotalSum">{v,DeliveryExtra}</parameter>
+										<parameter name="NetSum">{v,DeliveryExtra}</parameter>
+										<parameter name="AdditionalCost">True</parameter>
+										<parameter name="LineType">1</parameter>
+										<parameter name="AdditionalCostRecognition">DELIVERY_EXTRA</parameter>
+										<parameter name="APriceNet">{v,DeliveryExtra}</parameter>
+										<parameter name="Quantity">1</parameter>
+									</method>
+								</section>
+								
+								
+								<section name="AddRounding" include="{F,IF(v,Rounding;&lt;&gt;;0)}">
+									<method name="AddLineItem" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='AddLineItem']">
+										<parameter name="InstanceName">Invoice</parameter>
+										<parameter name="debug">{v,ObjectDebug}</parameter>
+										<parameter name="ItemTotalSum">{v,Rounding}</parameter>
+										<parameter name="NetSum">{v,Rounding}</parameter>
+										<parameter name="AdditionalCost">True</parameter>
+										<parameter name="LineType">1</parameter>
+										<parameter name="AdditionalCostRecognition">Rounding</parameter>
+										<parameter name="APriceNet">{v,Rounding}</parameter>
+										<parameter name="Quantity">1</parameter>
+									</method>
+								</section>
+								
+							</section>
+							
+							
+							<section name="TSSJDEE1TaxLogic" include="{F,AND(F,OR(F,IF(v,CompanyCode;=;&quot;TSSUS52&quot;);F,IF(v,CompanyCode;=;&quot;TSSUS262&quot;));F,NOT(F,IF(v,TaxLineAmount;=;&quot;0&quot;));F,NOT(F,IF(v,TaxLineAmount;=;&quot;0.0&quot;));F,NOT(F,IF(v,TaxLineAmount;=;&quot;0.00&quot;));F,NOT(F,IF(v,TaxLineAmount;=;&quot;&quot;));F,NOT(F,IF(v,TaxLineAmount;=;&quot; &quot;)))}">
+								<method name="AddLineItem" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='AddLineItem']">
+									<parameter name="InstanceName">Invoice</parameter>
+									<parameter name="debug">{v,ObjectDebug}</parameter>
+									<parameter name="ItemTotalSum">{v,TaxLineAmount}</parameter>
+									<parameter name="NetSum">{v,TaxLineAmount}</parameter>
+									<parameter name="ProductCode">TAX</parameter>
+									<parameter name="APriceNet">{v,TaxLineAmount}</parameter>
+									<parameter name="Quantity">1</parameter>
+								</method>
+							</section>
+							<method name="AddOrganizationIdentifier" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='AddOrganizationIdentifier']">
+								<parameter name="InstanceName">Invoice</parameter>
+								<parameter name="debug">{v,ObjectDebug}</parameter>
+								
+								<parameter name="Key">{v,identifierKeyId}</parameter>
+								<parameter name="Value">{v,CompanyNetServiceId}</parameter>
+							</method>
+							
+							<method name="AddSupplierIdentifier" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='AddSupplierIdentifier']">
+								<parameter name="InstanceName">Invoice</parameter>
+								<parameter name="debug">{v,ObjectDebug}</parameter>
+								<parameter name="Key">SupplierId</parameter>
+								<parameter name="Value">{v,SupplierId}</parameter>
+							</method>
+							
+							<method name="AddSupplierIdentifier" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='AddSupplierIdentifier']">
+								<parameter name="InstanceName">Invoice</parameter>
+								<parameter name="debug">{v,ObjectDebug}</parameter>
+								<parameter name="Key">IntegrationID</parameter>
+								<parameter name="Value">{v,IntegrationID}</parameter>
+							</method>
+							
+							<method name="AddSupplierIdentifier" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='AddSupplierIdentifier']">
+								<parameter name="InstanceName">Invoice</parameter>
+								<parameter name="debug">{v,ObjectDebug}</parameter>
+								<parameter name="Key">COMPANY_IDENTIFIER</parameter>
+								<parameter name="Value">{v,SupplierNetServiceId}</parameter>
+							</method>
+							<section name="loopImages" loopDataSource="xmlInvoice;//INVOICE_CENTER/CONTENT_FRAME/INVOICES/INVOICE/CONTROL/IMAGE_CONTROL">
+								<variable name="AttachmentFileName">{xmlInvoice,"IMAGE_FILE"}</variable>
+								<variable name="AttachmentType">{xmlInvoice,"@TYPE"}</variable>
+								<variable name="AttachmentType" include="{F,IF(v,AttachmentType;=;&quot;&quot;)}">IMAGE</variable>
+								
+								<variable name="AddAttachmentFile">True</variable>
+								<variable name="AddAttachmentFile" include="{F,INSTR(F,UPPER(v,AttachmentFileName);&quot;.ZIP.ORIGINAL&quot;;true;false)}">False</variable>
+								<variable name="AddAttachmentFile" include="{F,AND(F,INSTR(v,AttachmentFileName;&quot;.ZIP.ORIGINAL&quot;;true;false);F,IF(F,LEFT(v,OriginService;1);=;&quot;1&quot;))}">True</variable>
+								<method name="AddImage" include="{v,AddAttachmentFile}" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='AddImage']">
+									<parameter name="InstanceName">Invoice</parameter>
+									<parameter name="debug">{v,ObjectDebug}</parameter>
+									<parameter name="ImageFileName">{v,btStorageLocation}{v,AttachmentFileName}</parameter>
+									<parameter name="ContentType">{v,AttachmentType}</parameter>
+									<parameter name="FileExtension">{v,AttachmentType}</parameter>
+									<parameter name="Category">{F,EVAL(v,AttachmentType;=;VOUCHER_MEMO;ATTACHMENT;IMAGE)}</parameter>
+								</method>
+							</section>
+							
+							<method name="AddImage" include="{v,AddAttachmentFile}" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='AddImage']">
+								<parameter name="InstanceName">Invoice</parameter>
+								<parameter name="debug">{v,ObjectDebug}</parameter>
+								<parameter name="ImageFileName">{BT.Mime,FileName}</parameter>
+								<parameter name="ContentType">XML</parameter>
+								<parameter name="FileExtension">XML</parameter>
+								<parameter name="Category">ATTACHMENT</parameter>
+							</method>
+							<method name="AddComments" include="{F,IF(v,PaymentPlanReference;&lt;&gt;;v,PaymentPlanReferenceTemp)}" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='AddComments']">
+								<parameter name="InstanceName">Invoice</parameter>
+								<parameter name="Debug">{v,ObjectDebug}</parameter>
+								<parameter name="LogComment">{F,COMBINE("Paymentplan could not be found for contract number: ";v,PaymentPlanReferenceTemp)}</parameter>
+							</method>
+							
+							<variable name="GetInvoiceContentType">{F,GETDATA(v,I_DataSource;InvoiceContentType)}</variable>
+							<variable name="GetInvoiceTransactionType">{F,GETDATA(v,I_DataSource;InvoiceTransactionType)}</variable>
+							<variable name="SetInvoiceContentType" include="{F,IF(v,GetInvoiceContentType;=;&quot;&quot;)}">{F,SETDATA(v,I_DataSource;InvoiceContentType;0)}</variable>
+							<variable name="SetInvoiceTransactionType" include="{F,IF(v,GetInvoiceTransactionType;=;&quot;&quot;)}">{F,SETDATA(v,I_DataSource;InvoiceTransactionType;0)}</variable>
+							
+							<method name="SaveInvoice" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='SaveInvoice']">
+								<parameter name="InstanceName">Invoice</parameter>
+								<parameter name="debug">{v,ObjectDebug}</parameter>
+								<parameter name="SendToProcess">{v,SendToProcessSW}</parameter>
+							</method>
+							<onError onErrorJumpToXPath="//section[@name='ErrorHandlerTracker']" resume="True">
+								<section name="SendInvoiceTrackerStatus" include="{F,AND(F,IF(v,SupplierNetServiceId;&lt;&gt;;&quot;&quot;);F,IF(F,UPPER(v,InvoiceTracker_inuse);=;TRUE))}" jumpToXPath="//section[@name='InvoiceTracker']"/>
+							</onError>
+							<method name="UnloadInvoice" jumpToXmlFile="{v,InvoiceObject}" jumpToXPath="//section[@name='UnloadInvoice']">
+								<parameter name="InstanceName">Invoice</parameter>
+								<parameter name="debug">{v,ObjectDebug}</parameter>
+							</method>
+						</section>
+						
+						<method name="SendAcknowledgement" jumpToXmlFile="{v,BTObject}" jumpToXPath="//section[@name='SendAcknowledgement']">
+							<parameter name="InstanceName">BT</parameter>
+							
+							<parameter name="AckStatusCode">{F,EVAL(F,LOWER(v,ResponseResult);=;true;0;2)}</parameter>
+							<parameter name="debug">{v,ObjectDebug}</parameter>
+						</method>
+					</onError>
+				</section>
+				<message type="OK">Imported {BT.Properties,SuccessCount} invoices, Failed {BT.Properties,FailedCount} invoices.</message>
+				<method name="CleanUpBT2P2P" jumpToXmlFile="{v,BTObject}" jumpToXPath="//section[@name='CleanUpBT2P2P']">
+					<parameter name="InstanceName">BT</parameter>
+					<parameter name="debug">{v,ObjectDebug}</parameter>
+				</method>
+			</section>
+			<section name="ErrorHandler">
+				
+				<variable name="errorMessage"/>
+				<variable name="errorxmlstring"/>
+				<variable name="errorxmlstring" include="{F,EXISTS(response;response)}">{response,response}</variable>
+				<onError name="ErrorHanderGetMessage" onErrorJumpToXPath="//section[@name='GeneralErrorHandler']" resume="True">
+					<section name="CatchErrorFromReturnMessage">
+						
+						<onError name="ErrorHanderGetMessage" onErrorJumpToXPath="//section[@name='AckErrorHandler']" resume="True">
+							<method name="LoadInvoiceXML" include="{F,IF(F,LEN(v,errorxmlstring);&gt;;0)}">
+								<builtInMethodParameterList name="bw_XML_Input">
+									<parameter name="XMLSource">{v,errorxmlstring}</parameter>
+									<return name="xmlError"/>
+								</builtInMethodParameterList>
+								<variable name="errorMessage">{xmlError,"//*[local-name()='Details']"}</variable>
+							</method>
+							<variable name="errorMessage" include="{F,IF(F,LEN(v,errorMessage);=;0)}">{error,baseexception}</variable>
+						</onError>
+					</section>
+					<method name="SendAcknowledgement" jumpToXmlFile="{v,BTObject}" jumpToXPath="//section[@name='SendAcknowledgement']">
+						<parameter name="InstanceName">BT</parameter>
+						<parameter name="AckStatusCode">2</parameter>
+						<parameter name="AckInformation">{v,errorMessage}</parameter>
+						<parameter name="debug">{v,ObjectDebug}</parameter>
+					</method>
+				</onError>
+			</section>
+			<section name="GeneralErrorHandler"/>
+			<section name="AckErrorHandler"/>
+		</section>
+	</sections>
+</erpConnector>
+
+<!----------- Query in Basware extracting fields with corresponding names ----
+select 
+  --CNF_Entity.NAME "Entity name",
+  CNF_Type.NAME "Configuration type name",
+  CNF_item.NAME "Item name",
+  CNF_item.RESOURCE_ID "Resource ID",
+/*  CNF_ITEM.EXPRESSION,
+  CNF_item.LOOKUP_LIST_ID,
+  CNF_ITEM.MANDATORY,
+  CNF_ITEM.READONLY,*/
+  CNF_ITEM.DEFAULT_VALUE
+  
+from 
+        CMN_ENTITY_CONFIG_ITEM CNF_item
+		left join CMN_ENTITY_TYPE_CONFIG CNF_Type ON CNF_Type.ID=CNF_item.ENTITY_TYPE_CONFIG_ID
+		left join CMN_ENTITY_CONFIG CNF_Entity ON CNF_Entity.ID=CNF_Type.ENTITY_CONFIG_ID
+where 
+	CNF_Entity.NAME='1 - No prebook (main entity)'
+	and CNF_Type.NAME IN ('Invoice Header Data','Invoice Lines')
+
+-->

@@ -1,0 +1,61 @@
+================================================================================
+DOKUMENTACJA SKRYPTU: EXTRAKTOR FAKTUR D365 (TAR / TAR.GZ / TGZ)
+================================================================================
+
+1. OPIS PROGRAMU
+--------------------------------------------------------------------------------
+Skrypt służy do automatycznego przeszukiwania archiwów .tar / .tar.gz / .tgz 
+zawierających pliki integracyjne XML systemu Dynamics 365 (D365) oraz 
+ekstrakcji plików powiązanych z określonymi numerami faktur.
+
+Obsługuje trzy sposoby przekazywania numerów faktur:
+  - Lista w wierszu poleceń (CLI): np. "FV/123, FV/456, 789"
+  - Plik CSV: ścieżka do pliku CSV zawierającego kolumnę z fakturami.
+  - Ekstrakcja pełna: symbol '*' wypakowuje wszystkie faktury.
+
+2. WYMAGANIA
+--------------------------------------------------------------------------------
+- Python 3.10 lub nowszy
+- Wyłącznie biblioteki standardowe Pythona:
+  * argparse, csv, os, re, tarfile, xml.etree.ElementTree
+
+3. SKŁADNIA I PARAMETRY
+--------------------------------------------------------------------------------
+Składnia:
+  python script.py <tar_file> <invoices_param> [-o OUTPUT_DIR]
+
+Argumenty pozycyjne:
+  tar_file          Ścieżka do archiwum (.tar, .tar.gz, .tgz).
+  invoices_param    Ścieżka do pliku CSV LUB lista faktur po przecinku 
+                    LUB '*' dla wszystkich.
+
+Opcje:
+  -o, --output      Katalog docelowy (domyślnie: ./extracted_invoices).
+
+4. ZASADA DZIAŁANIA
+--------------------------------------------------------------------------------
+1. Rozpoznawanie parametru wejściowego:
+   - Skrypt sprawdza, czy 'invoices_param' to istniejący plik na dysku.
+     Jeśli tak -> parsuje plik CSV.
+   - Jeśli nie -> dzieli ciąg znaków po przecinkach i/lub białych znakach.
+   - Jeśli podano '*' -> uruchamia pełną ekstrakcję.
+
+2. Faza 1 (Skanowanie i Indeksowanie):
+   - Strumieniowe odczytanie archiwum .tar.gz.
+   - Indeksowanie tagów HeaderReference, InvoiceNumber oraz reguł opisu BW:.
+   - Zachowanie treści bajtowej w pamięci.
+
+3. Faza 2 (Uzupełnianie Relacji i Zapis):
+   - Łączenie powiązanych plików (nagłówek <-> pozycje).
+   - Zapis wyselekcjonowanych plików XML do folderów '[NumerFaktury] - [HeaderRef]'.
+
+5. PRZYKŁADY UŻYCIA
+--------------------------------------------------------------------------------
+a) Podanie listy faktur bezpośrednio w CLI (rozdzielone przecinkami):
+   python script.py archiwum_d365.tar.gz "BW:17360, BW:17361, 10045"
+
+b) Podanie ścieżki do pliku CSV:
+   python script.py archiwum_d365.tar.gz lista_faktur.csv
+
+c) Pełna ekstrakcja wszystkich faktur z własnym katalogiem wyjściowym:
+   python script.py archiwum_d365.tgz "*" -o ./wynik_faktury
